@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field } from "@/components/form/Field";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-auth";
 import { bootstrapAdmin, hasAnyUser } from "@/lib/admin.functions";
@@ -110,7 +110,10 @@ function ForgotForm({ onBack }: { onBack: () => void }) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-    if (error) return toast.error("Não foi possível enviar o e-mail", { description: error.message });
+    if (error) {
+      toast.error("Não foi possível enviar o e-mail", { description: error.message });
+      return;
+    }
     setSent(true);
   });
   return (
@@ -186,15 +189,5 @@ function BootstrapForm({ onDone }: { onDone: () => void }) {
         </Button>
       </form>
     </AuthCard>
-  );
-}
-
-export function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
-      {children}
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
-    </div>
   );
 }
