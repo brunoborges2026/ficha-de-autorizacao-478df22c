@@ -16,6 +16,6 @@ export async function generateFichaPdfDataUrl(props: FichaPdfProps) {
     import("@react-pdf/renderer"),
     import("@/components/ficha/FichaPdf"),
   ]);
-  const blob = await pdf(createElement(FichaPdf, props)).toBlob();
+  const blob = await pdf(createElement(FichaPdf, props) as never).toBlob();
   return blobToDataUrl(blob);
 }

@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { ConditionsData, OwnerData, PropertyData } from "./schemas";
+import type { Json } from "@/integrations/supabase/types";
 import type { AuthorizationRecord } from "./format";
 
 /** 32 hex chars — matches the token format accepted by the public signing functions. */
@@ -51,9 +52,9 @@ export async function createAuthorization(input: {
       token,
       status: "pendente",
       property_code: input.property.codigo || null,
-      owner: input.owner as unknown as Record<string, unknown>,
-      property: input.property as unknown as Record<string, unknown>,
-      conditions: input.conditions as unknown as Record<string, unknown>,
+      owner: input.owner as unknown as Json,
+      property: input.property as unknown as Json,
+      conditions: input.conditions as unknown as Json,
     })
     .select("id, token")
     .single();
