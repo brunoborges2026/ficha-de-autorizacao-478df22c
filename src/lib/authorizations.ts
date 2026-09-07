@@ -11,13 +11,7 @@ export const newToken = () =>
 export const signingUrl = (token: string) =>
   `${typeof window === "undefined" ? "" : window.location.origin}/assinar/${token}`;
 
-const parse = (row: Record<string, unknown>): AuthorizationRecord =>
-  ({
-    ...row,
-    owner: row.owner as OwnerData,
-    property: row.property as PropertyData,
-    conditions: row.conditions as ConditionsData,
-  }) as AuthorizationRecord;
+const parse = (row: unknown): AuthorizationRecord => row as AuthorizationRecord;
 
 export const authorizationsQueryOptions = () => ({
   queryKey: ["authorizations"],
