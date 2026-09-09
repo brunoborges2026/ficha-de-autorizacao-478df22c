@@ -38,12 +38,13 @@ export function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) 
   return (
     <div className="space-y-3">
       <div className="relative rounded-md border border-border bg-card">
-        <SignatureCanvas
+        <Pad
           ref={ref}
           penColor="#0f172a"
           onEnd={commit}
           canvasProps={{ className: "h-44 w-full touch-none rounded-md sm:h-52" }}
         />
+
         {!hasInk && (
           <span className="pointer-events-none absolute inset-x-0 bottom-4 text-center text-xs text-muted-foreground">
             Assine aqui com o dedo ou o mouse
