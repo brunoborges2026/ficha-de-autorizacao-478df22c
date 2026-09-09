@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as DefinirSenhaRouteImport } from './routes/definir-senha'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AssinarTokenRouteImport } from './routes/assinar.$token'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedFichasIdRouteImport } from './routes/_authenticated/fichas.$id'
 import { Route as AuthenticatedFichasNovaRouteImport } from './routes/_authenticated/fichas.nova'
@@ -42,6 +43,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AssinarTokenRoute = AssinarTokenRouteImport.update({
+  id: '/assinar/$token',
+  path: '/assinar/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/definir-senha': typeof DefinirSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/assinar/$token': typeof AssinarTokenRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/fichas/$id': typeof AuthenticatedFichasIdRoute
   '/fichas/nova': typeof AuthenticatedFichasNovaRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/definir-senha': typeof DefinirSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/assinar/$token': typeof AssinarTokenRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/fichas/$id': typeof AuthenticatedFichasIdRoute
   '/fichas/nova': typeof AuthenticatedFichasNovaRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/definir-senha': typeof DefinirSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/assinar/$token': typeof AssinarTokenRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/fichas/$id': typeof AuthenticatedFichasIdRoute
   '/_authenticated/fichas/nova': typeof AuthenticatedFichasNovaRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
     | '/definir-senha'
     | '/reset-password'
     | '/dashboard'
+    | '/assinar/$token'
     | '/admin/usuarios'
     | '/fichas/$id'
     | '/fichas/nova'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
     | '/definir-senha'
     | '/reset-password'
     | '/dashboard'
+    | '/assinar/$token'
     | '/admin/usuarios'
     | '/fichas/$id'
     | '/fichas/nova'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
     | '/definir-senha'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/assinar/$token'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/fichas/$id'
     | '/_authenticated/fichas/nova'
@@ -124,6 +136,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   DefinirSenhaRoute: typeof DefinirSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  AssinarTokenRoute: typeof AssinarTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/assinar/$token': {
+      id: '/assinar/$token'
+      path: '/assinar/$token'
+      fullPath: '/assinar/$token'
+      preLoaderRoute: typeof AssinarTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/usuarios': {
       id: '/_authenticated/admin/usuarios'
@@ -209,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   DefinirSenhaRoute: DefinirSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  AssinarTokenRoute: AssinarTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
