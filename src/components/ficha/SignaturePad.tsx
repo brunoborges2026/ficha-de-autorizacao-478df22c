@@ -1,7 +1,17 @@
 import { useRef, useState } from "react";
+import type { ComponentType } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Eraser } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// react-signature-canvas ships React 18 class typings; alias it for React 19 JSX.
+const Pad = SignatureCanvas as unknown as ComponentType<{
+  ref?: unknown;
+  penColor?: string;
+  onEnd?: () => void;
+  canvasProps?: { className?: string };
+}>;
+
 
 /** Touch/mouse signature canvas. Emits a transparent PNG data URL (or null when cleared). */
 export function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
