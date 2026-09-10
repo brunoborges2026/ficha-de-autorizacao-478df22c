@@ -1,0 +1,6 @@
+{
+  "name": "Ficha de Autorização",
+  "description": "Sistema de gestão e assinatura digital de autorizações de comercialização de imóveis",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

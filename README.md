@@ -27,3 +27,6 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Sincronização Google AI Studio
+- Ambiente sincronizado com sucesso com o Google AI Studio Build.
