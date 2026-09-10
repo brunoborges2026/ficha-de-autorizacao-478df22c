@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import type { AuthorizationRecord, SignatureRecord } from "./format";
 
 const tokenSchema = z.string().regex(/^[a-f0-9]{24,64}$/, "Token inválido");
@@ -39,12 +41,17 @@ export type PublicSignature = Omit<SignatureRecord, "selfie_path" | "signature_p
   pdf_url: string | null;
 };
 
-async function signedUrls(admin: any, sig: SignatureRecord | null): Promise<PublicSignature | null> {
+async function signedUrls(
+  admin: SupabaseClient<Database>,
+  sig: SignatureRecord | null,
+): Promise<PublicSignature | null> {
   if (!sig) return null;
   const paths = [sig.selfie_path, sig.signature_path, sig.pdf_path].filter(Boolean) as string[];
   const { data } = await admin.storage.from(BUCKET).createSignedUrls(paths, URL_TTL);
   const map = new Map<string, string>();
-  (data ?? []).forEach((d: { path: string | null; signedUrl: string }) => d.path && map.set(d.path, d.signedUrl));
+  (data ?? []).forEach(
+    (d: { path: string | null; signedUrl: string }) => d.path && map.set(d.path, d.signedUrl),
+  );
   const { selfie_path, signature_path, ...rest } = sig;
   return {
     ...rest,
@@ -61,14 +68,20 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: auth, error } = await supabaseAdmin
       .from("authorizations")
-      .select("id, token, status, owner, property, conditions, property_code, created_at, updated_at, broker_id")
+      .select(
+        "id, token, status, owner, property, conditions, property_code, created_at, updated_at, broker_id",
+      )
       .eq("token", data.token)
       .maybeSingle();
     if (error) throw new Error("Não foi possível carregar a ficha.");
     if (!auth) return { authorization: null, signature: null };
 
     const [{ data: broker }, { data: sig }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("full_name, email").eq("id", auth.broker_id).maybeSingle(),
+      supabaseAdmin
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", auth.broker_id)
+        .maybeSingle(),
       supabaseAdmin.from("signatures").select("*").eq("authorization_id", auth.id).maybeSingle(),
     ]);
 
@@ -77,7 +90,10 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
       ...(rest as unknown as Omit<AuthorizationRecord, "broker_id">),
       broker_name: broker?.full_name ?? broker?.email ?? null,
     };
-    return { authorization, signature: await signedUrls(supabaseAdmin, sig as SignatureRecord | null) };
+    return {
+      authorization,
+      signature: await signedUrls(supabaseAdmin, sig as SignatureRecord | null),
+    };
   });
 
 /** Public: records the owner's signature (selfie + drawn signature + metadata) and flips status. */
@@ -160,7 +176,14 @@ export const submitSignature = createServerFn({ method: "POST" })
 
     await supabaseAdmin.from("authorizations").update({ status: "assinado" }).eq("id", auth.id);
 
-    return { signedAt, ip, userAgent, latitude: data.latitude, longitude: data.longitude, validationHash };
+    return {
+      signedAt,
+      ip,
+      userAgent,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      validationHash,
+    };
   });
 
 /** Public: stores the PDF rendered in the owner's browser right after signing. */
@@ -183,7 +206,9 @@ export const uploadSignedPdf = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!sig) throw new Error("Assinatura não encontrada.");
     if (sig.pdf_path) {
-      const { data: u } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(sig.pdf_path, URL_TTL);
+      const { data: u } = await supabaseAdmin.storage
+        .from(BUCKET)
+        .createSignedUrl(sig.pdf_path, URL_TTL);
       return { pdfUrl: u?.signedUrl ?? null };
     }
     const pdf = dataUrlToBytes(data.pdf, ["application/pdf"]);
@@ -211,4 +236,40 @@ export const getSignatureFiles = createServerFn({ method: "GET" })
     if (!sig) return null;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     return signedUrls(supabaseAdmin, sig as SignatureRecord);
+  });
+
+/** Broker/admin: persists the PDF generated for an already signed ficha in Supabase Storage. */
+export const saveSignedPdfForAuthorization = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({ authorizationId: z.string().uuid(), pdf: z.string().min(100).max(15_000_000) })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: auth, error: authErr } = await context.supabase
+      .from("authorizations")
+      .select("id, status")
+      .eq("id", data.authorizationId)
+      .maybeSingle();
+    if (authErr || !auth || auth.status !== "assinado") throw new Error("Ficha não assinada.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: sig } = await supabaseAdmin
+      .from("signatures")
+      .select("id, pdf_path")
+      .eq("authorization_id", auth.id)
+      .maybeSingle();
+    if (!sig) throw new Error("Registro de assinatura não encontrado.");
+
+    const pdf = dataUrlToBytes(data.pdf, ["application/pdf"]);
+    const pdfPath = `${auth.id}/autorizacao-assinada.pdf`;
+    const up = await supabaseAdmin.storage
+      .from(BUCKET)
+      .upload(pdfPath, pdf.bytes, { contentType: "application/pdf", upsert: true });
+    if (up.error) throw new Error("Falha ao salvar o PDF: " + up.error.message);
+
+    await supabaseAdmin.from("signatures").update({ pdf_path: pdfPath }).eq("id", sig.id);
+    const { data: u } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(pdfPath, URL_TTL);
+    return { pdfUrl: u?.signedUrl ?? null };
   });

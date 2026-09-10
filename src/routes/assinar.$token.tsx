@@ -166,8 +166,8 @@ function SignPage() {
             <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
             <h1 className="mt-3 text-lg font-bold text-secondary">Documento assinado</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              A autorização do imóvel {shortAddress(ficha.property.endereco)} foi assinada digitalmente e enviada à{" "}
-              {COMPANY.name}.
+              A autorização do imóvel {shortAddress(ficha.property.endereco)} foi assinada
+              digitalmente e enviada à {COMPANY.name}.
             </p>
             {pdfUrl && (
               <Button asChild className="mt-4">
@@ -183,8 +183,8 @@ function SignPage() {
               Olá, {ficha.owner.nome.split(" ")[0]}! Confira e assine sua autorização
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Leia os dados abaixo, tire uma selfie segurando seu documento e assine na tela. Precisamos da sua câmera e
-              da sua localização apenas para validar a assinatura.
+              Leia os dados abaixo, tire uma selfie segurando seu documento e assine na tela.
+              Precisamos da sua câmera e da sua localização apenas para validar a assinatura.
             </p>
             <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
               <MapPin className="h-3.5 w-3.5" />
@@ -210,9 +210,14 @@ function SignPage() {
             </DocSection>
 
             <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border bg-muted/40 p-4">
-              <Checkbox checked={accepted} onCheckedChange={(v) => setAccepted(v === true)} className="mt-0.5" />
+              <Checkbox
+                checked={accepted}
+                onCheckedChange={(v) => setAccepted(v === true)}
+                className="mt-0.5"
+              />
               <span className="text-sm text-foreground">
-                Li e concordo com os termos desta autorização e confirmo a veracidade das informações prestadas.
+                Li e concordo com os termos desta autorização e confirmo a veracidade das
+                informações prestadas.
               </span>
             </label>
 
@@ -235,7 +240,8 @@ function SignPage() {
 
             <p className="flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Registramos data/hora de Brasília, IP, dispositivo, localização e um hash SHA-256 de validação.
+              Registramos data/hora de Brasília, IP, dispositivo, localização e um hash SHA-256 de
+              validação.
             </p>
           </div>
         )}

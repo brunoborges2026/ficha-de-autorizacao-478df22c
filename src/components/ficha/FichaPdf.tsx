@@ -2,7 +2,12 @@ import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/render
 import { LOGO_URL } from "@/components/brand/Logo";
 import { COMPANY, type ConditionsData, type OwnerData, type PropertyData } from "@/lib/schemas";
 import { formatDateTimeBR, formatLongDateBR } from "@/lib/format";
-import { authorizationText, buildConditionsRows, buildOwnerRows, buildPropertyRows } from "./FichaDocument";
+import {
+  authorizationText,
+  buildConditionsRows,
+  buildOwnerRows,
+  buildPropertyRows,
+} from "./FichaDocument";
 
 export type FichaPdfProps = {
   owner: OwnerData;
@@ -10,21 +15,27 @@ export type FichaPdfProps = {
   conditions: ConditionsData;
   createdAt: string;
   brokerName?: string | null;
-  selfieDataUrl: string;
-  signatureDataUrl: string;
-  meta: {
+  logoDataUrl?: string | null;
+  selfieDataUrl?: string | null;
+  signatureDataUrl?: string | null;
+  meta?: {
     signedAt: string;
     ip: string | null;
     userAgent: string | null;
     latitude: number | null;
     longitude: number | null;
     validationHash: string;
-  };
+  } | null;
 };
 
 const s = StyleSheet.create({
   page: { paddingTop: 28, paddingBottom: 44, paddingHorizontal: 32, fontSize: 9, color: "#0f172a" },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 14,
+  },
   logo: { width: 120, objectFit: "contain" },
   headerRight: { textAlign: "right" },
   title: { fontSize: 13, fontWeight: 700 },
@@ -77,7 +88,9 @@ function Rows({ rows }: { rows: { label: string; value: unknown; wide?: boolean 
       {rows.map((r) => (
         <View key={r.label} style={r.wide ? s.cellWide : s.cell}>
           <Text style={s.label}>{r.label}</Text>
-          <Text style={s.value}>{typeof r.value === "string" || typeof r.value === "number" ? String(r.value) : "—"}</Text>
+          <Text style={s.value}>
+            {typeof r.value === "string" || typeof r.value === "number" ? String(r.value) : "—"}
+          </Text>
         </View>
       ))}
     </View>
@@ -86,11 +99,15 @@ function Rows({ rows }: { rows: { label: string; value: unknown; wide?: boolean 
 
 export function FichaPdf(props: FichaPdfProps) {
   const { owner, property, conditions, meta } = props;
+  const logoSrc =
+    props.logoDataUrl ||
+    (typeof window !== "undefined" ? `${window.location.origin}${LOGO_URL}` : LOGO_URL);
+
   return (
     <Document title={`Autorização de Comercialização — ${owner.nome}`} author={COMPANY.name}>
       <Page size="A4" style={s.page} wrap>
         <View style={s.header}>
-          <Image src={LOGO_URL} style={s.logo} />
+          <Image src={logoSrc} style={s.logo} />
           <View style={s.headerRight}>
             <Text style={s.title}>Autorização de Comercialização</Text>
             <Text style={s.muted}>
@@ -113,49 +130,63 @@ export function FichaPdf(props: FichaPdfProps) {
         <View style={s.term}>
           <Text>{authorizationText(owner, property, conditions)}</Text>
           <Text style={{ marginTop: 6 }}>
-            {COMPANY.city}, {formatLongDateBR(meta.signedAt)}
+            {COMPANY.city}, {formatLongDateBR(meta?.signedAt || props.createdAt)}
             {props.brokerName ? ` • Captação: ${props.brokerName}` : ""}
           </Text>
         </View>
 
-        <Text style={s.sectionTitle} break>
-          4. Certificado de Assinatura Digital
-        </Text>
-        <View style={s.imagesRow}>
-          <View style={s.imageBox}>
-            <Image src={props.selfieDataUrl} style={s.selfie} />
-            <Text style={s.muted}>Selfie do proprietário com documento</Text>
-          </View>
-          <View style={s.imageBox}>
-            <Image src={props.signatureDataUrl} style={s.signature} />
-            <Text style={s.muted}>Assinatura de {owner.nome}</Text>
-          </View>
-        </View>
+        {meta && (
+          <>
+            <Text style={s.sectionTitle} break>
+              4. Certificado de Assinatura Digital
+            </Text>
+            {(props.selfieDataUrl || props.signatureDataUrl) && (
+              <View style={s.imagesRow}>
+                {props.selfieDataUrl ? (
+                  <View style={s.imageBox}>
+                    <Image src={props.selfieDataUrl} style={s.selfie} />
+                    <Text style={s.muted}>Selfie do proprietário com documento</Text>
+                  </View>
+                ) : null}
+                {props.signatureDataUrl ? (
+                  <View style={s.imageBox}>
+                    <Image src={props.signatureDataUrl} style={s.signature} />
+                    <Text style={s.muted}>Assinatura de {owner.nome}</Text>
+                  </View>
+                ) : null}
+              </View>
+            )}
 
-        <View style={s.certBox}>
-          <Text style={s.certTitle}>Metadados de validação</Text>
-          <Rows
-            rows={[
-              { label: "Assinado em (horário de Brasília)", value: formatDateTimeBR(meta.signedAt) },
-              { label: "Endereço IP", value: meta.ip ?? "—" },
-              {
-                label: "Coordenadas GPS",
-                value:
-                  meta.latitude != null && meta.longitude != null
-                    ? `${meta.latitude.toFixed(6)}, ${meta.longitude.toFixed(6)}`
-                    : "Não informadas",
-              },
-              { label: "CPF do signatário", value: owner.cpf },
-              { label: "Dispositivo / Navegador", value: meta.userAgent ?? "—", wide: true },
-            ]}
-          />
-          <Text style={s.label}>Hash de validação (SHA-256)</Text>
-          <Text style={s.hash}>{meta.validationHash}</Text>
-          <Text style={{ ...s.muted, marginTop: 6 }}>
-            Documento assinado eletronicamente. A integridade pode ser verificada junto à {COMPANY.name} pelo hash
-            acima, que vincula os dados desta ficha, a selfie, a assinatura e o instante da assinatura.
-          </Text>
-        </View>
+            <View style={s.certBox}>
+              <Text style={s.certTitle}>Metadados de validação</Text>
+              <Rows
+                rows={[
+                  {
+                    label: "Assinado em (horário de Brasília)",
+                    value: formatDateTimeBR(meta.signedAt),
+                  },
+                  { label: "Endereço IP", value: meta.ip ?? "—" },
+                  {
+                    label: "Coordenadas GPS",
+                    value:
+                      meta.latitude != null && meta.longitude != null
+                        ? `${meta.latitude.toFixed(6)}, ${meta.longitude.toFixed(6)}`
+                        : "Não informadas",
+                  },
+                  { label: "CPF do signatário", value: owner.cpf },
+                  { label: "Dispositivo / Navegador", value: meta.userAgent ?? "—", wide: true },
+                ]}
+              />
+              <Text style={s.label}>Hash de validação (SHA-256)</Text>
+              <Text style={s.hash}>{meta.validationHash}</Text>
+              <Text style={{ ...s.muted, marginTop: 6 }}>
+                Documento assinado eletronicamente. A integridade pode ser verificada junto à{" "}
+                {COMPANY.name} pelo hash acima, que vincula os dados desta ficha, a selfie, a
+                assinatura e o instante da assinatura.
+              </Text>
+            </View>
+          </>
+        )}
 
         <Text style={s.footer} fixed>
           {COMPANY.name} • CRECI {COMPANY.creci} • {COMPANY.phone} • {COMPANY.site}

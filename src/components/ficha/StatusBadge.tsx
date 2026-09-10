@@ -1,7 +1,13 @@
 import { CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function StatusBadge({ status, className }: { status: "pendente" | "assinado"; className?: string }) {
+export function StatusBadge({
+  status,
+  className,
+}: {
+  status: "pendente" | "assinado";
+  className?: string;
+}) {
   const signed = status === "assinado";
   return (
     <span

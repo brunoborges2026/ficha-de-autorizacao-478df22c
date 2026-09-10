@@ -19,9 +19,15 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Entrar | Vetorial Autorizações" },
-      { name: "description", content: "Acesso de corretores e administradores da Vetorial Imóveis e Arquitetura." },
+      {
+        name: "description",
+        content: "Acesso de corretores e administradores da Vetorial Imóveis e Arquitetura.",
+      },
       { property: "og:title", content: "Entrar | Vetorial Autorizações" },
-      { property: "og:description", content: "Acesso de corretores e administradores da Vetorial Imóveis e Arquitetura." },
+      {
+        property: "og:description",
+        content: "Acesso de corretores e administradores da Vetorial Imóveis e Arquitetura.",
+      },
     ],
   }),
   component: LoginPage,
@@ -38,7 +44,10 @@ const bootstrapSchema = z
     password: z.string().min(8, "Mínimo de 8 caracteres"),
     confirm: z.string(),
   })
-  .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
+  .refine((v) => v.password === v.confirm, {
+    message: "As senhas não conferem",
+    path: ["confirm"],
+  });
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -58,7 +67,8 @@ function LoginPage() {
     );
   }
 
-  if (usersQ.data && !usersQ.data.hasUsers) return <BootstrapForm onDone={() => usersQ.refetch()} />;
+  if (usersQ.data && !usersQ.data.hasUsers)
+    return <BootstrapForm onDone={() => usersQ.refetch()} />;
   if (mode === "forgot") return <ForgotForm onBack={() => setMode("login")} />;
   return <LoginForm onForgot={() => setMode("forgot")} />;
 }
@@ -83,16 +93,34 @@ function LoginForm({ onForgot }: { onForgot: () => void }) {
     <AuthCard title="Entrar" description="Acesse com o e-mail cadastrado pelo administrador.">
       <form onSubmit={onSubmit} className="space-y-4">
         <Field label="E-mail" error={form.formState.errors.email?.message}>
-          <Input type="email" autoComplete="email" placeholder="voce@vetorial.com" {...form.register("email")} />
+          <Input
+            type="email"
+            autoComplete="email"
+            placeholder="voce@vetorial.com"
+            {...form.register("email")}
+          />
         </Field>
         <Field label="Senha" error={form.formState.errors.password?.message}>
-          <Input type="password" autoComplete="current-password" placeholder="••••••••" {...form.register("password")} />
+          <Input
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            {...form.register("password")}
+          />
         </Field>
-        <Button type="submit" className="h-11 w-full text-base" disabled={form.formState.isSubmitting}>
+        <Button
+          type="submit"
+          className="h-11 w-full text-base"
+          disabled={form.formState.isSubmitting}
+        >
           {form.formState.isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           Entrar
         </Button>
-        <button type="button" onClick={onForgot} className="w-full text-center text-sm text-primary hover:underline">
+        <button
+          type="button"
+          onClick={onForgot}
+          className="w-full text-center text-sm text-primary hover:underline"
+        >
           Esqueci minha senha
         </button>
       </form>
@@ -128,7 +156,8 @@ function ForgotForm({ onBack }: { onBack: () => void }) {
     >
       {sent ? (
         <p className="rounded-md border border-success/30 bg-success/10 p-4 text-sm text-foreground">
-          Se este e-mail estiver cadastrado, você receberá um link em instantes. Verifique também a caixa de spam.
+          Se este e-mail estiver cadastrado, você receberá um link em instantes. Verifique também a
+          caixa de spam.
         </p>
       ) : (
         <form onSubmit={onSubmit} className="space-y-4">
@@ -153,8 +182,13 @@ function BootstrapForm({ onDone }: { onDone: () => void }) {
   });
   const onSubmit = form.handleSubmit(async (values) => {
     try {
-      await bootstrap({ data: { email: values.email, fullName: values.fullName, password: values.password } });
-      const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
+      await bootstrap({
+        data: { email: values.email, fullName: values.fullName, password: values.password },
+      });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
       if (error) throw error;
       toast.success("Conta de administrador criada!");
       onDone();

@@ -61,8 +61,12 @@ export function AppShell({
           {displayName.slice(0, 1).toUpperCase() || "?"}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">{displayName}</p>
-          <p className="text-xs text-sidebar-foreground/60">{role === "admin" ? "Administrador" : "Corretor"}</p>
+          <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">
+            {displayName}
+          </p>
+          <p className="text-xs text-sidebar-foreground/60">
+            {role === "admin" ? "Administrador" : "Corretor"}
+          </p>
         </div>
         <Button
           variant="ghost"
@@ -112,7 +116,9 @@ export function AppShell({
             {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
           </div>
         </div>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );

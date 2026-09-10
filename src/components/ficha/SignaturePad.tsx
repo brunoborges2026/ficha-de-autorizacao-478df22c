@@ -12,7 +12,6 @@ const Pad = SignatureCanvas as unknown as ComponentType<{
   canvasProps?: { className?: string };
 }>;
 
-
 /** Touch/mouse signature canvas. Emits a transparent PNG data URL (or null when cleared). */
 export function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
   const ref = useRef<SignatureCanvas>(null);

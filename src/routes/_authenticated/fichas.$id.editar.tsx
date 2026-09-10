@@ -26,10 +26,16 @@ export const Route = createFileRoute("/_authenticated/fichas/$id/editar")({
   head: () => ({
     meta: [
       { title: "Editar ficha | Vetorial Autorizações" },
-      { name: "description", content: "Edite uma autorização de comercialização ainda não assinada." },
+      {
+        name: "description",
+        content: "Edite uma autorização de comercialização ainda não assinada.",
+      },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Editar ficha | Vetorial Autorizações" },
-      { property: "og:description", content: "Edite uma autorização de comercialização ainda não assinada." },
+      {
+        property: "og:description",
+        content: "Edite uma autorização de comercialização ainda não assinada.",
+      },
     ],
   }),
   component: EditFichaPage,
@@ -68,7 +74,9 @@ function EditFichaPage() {
   if (!ficha) {
     return (
       <AppShell title="Ficha não encontrada">
-        <p className="text-sm text-muted-foreground">Esta ficha não existe ou você não tem acesso a ela.</p>
+        <p className="text-sm text-muted-foreground">
+          Esta ficha não existe ou você não tem acesso a ela.
+        </p>
         <Button asChild className="mt-4">
           <Link to="/dashboard">
             <ArrowLeft className="h-4 w-4" /> Voltar ao dashboard
@@ -84,7 +92,8 @@ function EditFichaPage() {
         <div className="rounded-lg border border-border bg-card p-6 text-center shadow-sm">
           <Lock className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">
-            Esta autorização já foi assinada digitalmente pelo proprietário e está preservada como documento final.
+            Esta autorização já foi assinada digitalmente pelo proprietário e está preservada como
+            documento final.
           </p>
           <Button asChild className="mt-4">
             <Link to="/fichas/$id" params={{ id }}>

@@ -2,7 +2,16 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Copy, Download, Loader2, MessageCircle, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  Download,
+  Loader2,
+  MessageCircle,
+  Pencil,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { FichaDocument } from "@/components/ficha/FichaDocument";
@@ -11,13 +20,17 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { authorizationQueryOptions, deleteAuthorization, signingUrl } from "@/lib/authorizations";
 import { buildWhatsappMessage, shortAddress, whatsappLink } from "@/lib/format";
-import { getSignatureFiles } from "@/lib/signing.functions";
+import { getSignatureFiles, saveSignedPdfForAuthorization } from "@/lib/signing.functions";
+import { downloadFichaPdf } from "@/lib/generate-pdf";
 
 export const Route = createFileRoute("/_authenticated/fichas/$id")({
   head: () => ({
     meta: [
       { title: "Detalhes da ficha | Vetorial Autorizações" },
-      { name: "description", content: "Dados completos da autorização de comercialização e certificado de assinatura." },
+      {
+        name: "description",
+        content: "Dados completos da autorização de comercialização e certificado de assinatura.",
+      },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Detalhes da ficha | Vetorial Autorizações" },
       {
@@ -35,13 +48,62 @@ function FichaDetailPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const fichaQ = useQuery(authorizationQueryOptions(id));
   const filesFn = useServerFn(getSignatureFiles);
+  const savePdfFn = useServerFn(saveSignedPdfForAuthorization);
   const filesQ = useQuery({
     queryKey: ["signature-files", id],
     enabled: fichaQ.data?.status === "assinado",
     queryFn: () => filesFn({ data: { authorizationId: id } }),
   });
+
+  const ficha = fichaQ.data;
+
+  const handleGenerateAndDownloadPdf = async () => {
+    if (!ficha) return;
+    setGeneratingPdf(true);
+    const toastId = toast.loading("Gerando PDF com certificado de assinatura...");
+    try {
+      const sigData = filesQ.data;
+      const { dataUrl } = await downloadFichaPdf({
+        owner: ficha.owner,
+        property: ficha.property,
+        conditions: ficha.conditions,
+        createdAt: ficha.created_at,
+        brokerName: ficha.broker_name || displayName,
+        selfieDataUrl: sigData?.selfie_url ?? null,
+        signatureDataUrl: sigData?.signature_url ?? null,
+        meta: sigData
+          ? {
+              signedAt: sigData.signed_at,
+              ip: sigData.ip ?? null,
+              userAgent: sigData.user_agent ?? null,
+              latitude: sigData.latitude ?? null,
+              longitude: sigData.longitude ?? null,
+              validationHash: sigData.validation_hash,
+            }
+          : null,
+      });
+
+      // Tenta persistir no Supabase Storage para próximas consultas
+      try {
+        await savePdfFn({ data: { authorizationId: id, pdf: dataUrl } });
+        void queryClient.invalidateQueries({ queryKey: ["signature-files", id] });
+      } catch (err) {
+        console.warn("PDF baixado localmente (cache no storage não foi gravado):", err);
+      }
+
+      toast.success("PDF gerado e baixado com sucesso!", { id: toastId });
+    } catch (e) {
+      toast.error("Não foi possível gerar o PDF", {
+        id: toastId,
+        description: (e as Error).message || "Tente novamente em instantes.",
+      });
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
 
   if (fichaQ.isLoading) {
     return (
@@ -53,11 +115,12 @@ function FichaDetailPage() {
     );
   }
 
-  const ficha = fichaQ.data;
   if (!ficha) {
     return (
       <AppShell title="Ficha não encontrada">
-        <p className="text-sm text-muted-foreground">Esta ficha não existe ou você não tem acesso a ela.</p>
+        <p className="text-sm text-muted-foreground">
+          Esta ficha não existe ou você não tem acesso a ela.
+        </p>
         <Button asChild className="mt-4">
           <Link to="/dashboard">
             <ArrowLeft className="h-4 w-4" /> Voltar ao dashboard
@@ -113,14 +176,42 @@ function FichaDetailPage() {
               </Button>
             </>
           ) : pdfUrl ? (
-            <Button asChild>
-              <a href={pdfUrl} target="_blank" rel="noreferrer">
-                <Download className="h-4 w-4" /> Baixar PDF
-              </a>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild>
+                <a href={pdfUrl} target="_blank" rel="noreferrer">
+                  <Download className="h-4 w-4 mr-1" /> Baixar PDF
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={generatingPdf}
+                onClick={handleGenerateAndDownloadPdf}
+                title="Regerar e baixar novo PDF"
+              >
+                {generatingPdf ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           ) : (
-            <Button disabled variant="outline">
-              {filesQ.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null} PDF indisponível
+            <Button
+              variant="default"
+              disabled={generatingPdf || filesQ.isLoading}
+              onClick={handleGenerateAndDownloadPdf}
+            >
+              {generatingPdf || filesQ.isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  {generatingPdf ? "Gerando PDF..." : "Carregando..."}
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-1" /> Gerar e Baixar PDF
+                </>
+              )}
             </Button>
           )}
           {isAdmin && (
@@ -143,7 +234,12 @@ function FichaDetailPage() {
                 }
               }}
             >
-              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Excluir
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}{" "}
+              Excluir
             </Button>
           )}
         </div>

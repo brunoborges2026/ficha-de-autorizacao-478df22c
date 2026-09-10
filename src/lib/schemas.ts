@@ -1,7 +1,33 @@
 import { z } from "zod";
 
 export const UF_OPTIONS = [
-  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ] as const;
 
 export const ESTADO_CIVIL_OPTIONS = [
@@ -30,7 +56,12 @@ export const TIPO_IMOVEL_OPTIONS = [
 export const ESTADO_IMOVEL_OPTIONS = ["Novo", "Usado", "Em construção"] as const;
 export const SALAS_OPTIONS = ["Integradas", "Separadas", "Não possui"] as const;
 export const COZINHA_OPTIONS = ["Individual", "Integrada", "Americana"] as const;
-export const COBERTURA_VAGA_OPTIONS = ["Sem cobertura", "Coberta fixa", "Coberta rotativa", "Descoberta"] as const;
+export const COBERTURA_VAGA_OPTIONS = [
+  "Sem cobertura",
+  "Coberta fixa",
+  "Coberta rotativa",
+  "Descoberta",
+] as const;
 export const PERIODICIDADE_OPTIONS = ["Mensal", "Anual"] as const;
 export const PLANEJADOS_OPTIONS = [
   "Dormitórios",
@@ -71,7 +102,10 @@ export const ownerSchema = z.object({
   profissao: req("Informe a profissão").max(80),
   endereco: addressSchema,
   email: z.string().trim().email("E-mail inválido").max(150),
-  telefone: req("Informe o telefone/WhatsApp").regex(/^\(?\d{2}\)?\s?9?\d{4}-?\d{4}$/, "Telefone inválido"),
+  telefone: req("Informe o telefone/WhatsApp").regex(
+    /^\(?\d{2}\)?\s?9?\d{4}-?\d{4}$/,
+    "Telefone inválido",
+  ),
 });
 
 export const propertySchema = z.object({

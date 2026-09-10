@@ -29,7 +29,11 @@ export const authorizationsQueryOptions = () => ({
 export const authorizationQueryOptions = (id: string) => ({
   queryKey: ["authorization", id],
   queryFn: async (): Promise<AuthorizationRecord | null> => {
-    const { data, error } = await supabase.from("authorizations").select("*").eq("id", id).maybeSingle();
+    const { data, error } = await supabase
+      .from("authorizations")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
     if (error) throw new Error(error.message);
     return data ? parse(data) : null;
   },

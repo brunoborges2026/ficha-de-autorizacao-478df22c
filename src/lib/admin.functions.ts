@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 const emailSchema = z.object({ email: z.string().trim().email("E-mail inválido").max(150) });
 
@@ -27,7 +29,9 @@ export const bootstrapAdmin = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count } = await supabaseAdmin.from("profiles").select("id", { count: "exact", head: true });
+    const { count } = await supabaseAdmin
+      .from("profiles")
+      .select("id", { count: "exact", head: true });
     if ((count ?? 0) > 0) throw new Error("O sistema já possui usuários cadastrados.");
 
     const { error } = await supabaseAdmin.auth.admin.createUser({
@@ -40,8 +44,11 @@ export const bootstrapAdmin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-async function assertAdmin(ctx: { supabase: any; userId: string }) {
-  const { data, error } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
+async function assertAdmin(ctx: { supabase: SupabaseClient<Database>; userId: string }) {
+  const { data, error } = await ctx.supabase.rpc("has_role", {
+    _user_id: ctx.userId,
+    _role: "admin",
+  });
   if (error || !data) throw new Error("Acesso restrito a administradores.");
 }
 
@@ -51,7 +58,9 @@ export const listUsers = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profiles }, { data: roles }, { data: authList }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, email, full_name, must_set_password, creci, created_at"),
+      supabaseAdmin
+        .from("profiles")
+        .select("id, email, full_name, must_set_password, creci, created_at"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
     ]);
@@ -87,11 +96,17 @@ export const inviteBroker = createServerFn({ method: "POST" })
 
 export const resetBrokerPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ userId: z.string().uuid(), origin: z.string().url() }).parse(input))
+  .inputValidator((input) =>
+    z.object({ userId: z.string().uuid(), origin: z.string().url() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: profile } = await supabaseAdmin.from("profiles").select("email").eq("id", data.userId).single();
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .eq("id", data.userId)
+      .single();
     if (!profile) throw new Error("Usuário não encontrado.");
     const { error } = await supabaseAdmin.auth.resetPasswordForEmail(profile.email, {
       redirectTo: `${data.origin}/reset-password`,
@@ -106,7 +121,8 @@ export const deleteBroker = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    if (data.userId === context.userId) throw new Error("Você não pode excluir a sua própria conta.");
+    if (data.userId === context.userId)
+      throw new Error("Você não pode excluir a sua própria conta.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
     if (error) throw new Error(error.message);

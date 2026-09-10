@@ -27,14 +27,24 @@ export function Stepper({ current }: { current: number }) {
                 {done ? <Check className="h-4 w-4" /> : i + 1}
               </span>
               <div className="hidden min-w-0 sm:block">
-                <p className={cn("truncate text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
+                <p
+                  className={cn(
+                    "truncate text-sm font-semibold",
+                    active ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
                   {s.title}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{s.hint}</p>
               </div>
             </div>
             <div className={cn("h-1 rounded-full", done || active ? "bg-primary" : "bg-border")} />
-            <p className={cn("text-xs font-semibold sm:hidden", active ? "text-foreground" : "text-muted-foreground")}>
+            <p
+              className={cn(
+                "text-xs font-semibold sm:hidden",
+                active ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
               {s.title}
             </p>
           </li>

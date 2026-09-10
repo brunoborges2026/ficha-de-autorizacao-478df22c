@@ -19,13 +19,15 @@ export function AuthCard({
           <Logo className="h-12" />
         </div>
         <div className="max-w-md">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Plataforma interna</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            Plataforma interna
+          </p>
           <h2 className="text-4xl font-bold leading-tight">
             Autorizações de comercialização com assinatura digital.
           </h2>
           <p className="mt-4 text-base text-secondary-foreground/70">
-            Crie a ficha em três etapas, envie pelo WhatsApp e receba o documento assinado com selfie,
-            geolocalização e certificado de validação.
+            Crie a ficha em três etapas, envie pelo WhatsApp e receba o documento assinado com
+            selfie, geolocalização e certificado de validação.
           </p>
         </div>
         <p className="text-xs text-secondary-foreground/50">

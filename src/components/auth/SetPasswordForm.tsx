@@ -24,7 +24,10 @@ const schema = z
     confirm: z.string(),
     creci: z.string().trim().max(40).optional(),
   })
-  .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
+  .refine((v) => v.password === v.confirm, {
+    message: "As senhas não conferem",
+    path: ["confirm"],
+  });
 
 const rules = [
   { label: "Pelo menos 8 caracteres", test: (p: string) => p.length >= 8 },
@@ -46,7 +49,11 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
       setReady(has ? "ok" : "missing");
     };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === "SIGNED_IN" || event === "PASSWORD_RECOVERY" || event === "INITIAL_SESSION")) finish(true);
+      if (
+        session &&
+        (event === "SIGNED_IN" || event === "PASSWORD_RECOVERY" || event === "INITIAL_SESSION")
+      )
+        finish(true);
     });
     supabase.auth.getSession().then(({ data: d }) => {
       if (d.session) finish(true);
@@ -103,7 +110,10 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
 
   if (ready === "missing") {
     return (
-      <AuthCard title="Link inválido ou expirado" description="Solicite um novo link ao administrador ou use a opção 'Esqueci minha senha'.">
+      <AuthCard
+        title="Link inválido ou expirado"
+        description="Solicite um novo link ao administrador ou use a opção 'Esqueci minha senha'."
+      >
         <Button className="w-full" onClick={() => navigate({ to: "/" })}>
           Ir para o login
         </Button>
@@ -121,7 +131,14 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
           {rules.map((r) => {
             const ok = r.test(pwd);
             return (
-              <li key={r.label} className={ok ? "flex items-center gap-1.5 text-success" : "flex items-center gap-1.5 text-muted-foreground"}>
+              <li
+                key={r.label}
+                className={
+                  ok
+                    ? "flex items-center gap-1.5 text-success"
+                    : "flex items-center gap-1.5 text-muted-foreground"
+                }
+              >
                 {ok ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
                 {r.label}
               </li>

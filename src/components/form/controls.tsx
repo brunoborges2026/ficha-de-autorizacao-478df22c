@@ -3,7 +3,13 @@ import { Field } from "@/components/form/Field";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,10 +89,16 @@ export function CheckboxField<T extends FieldValues>({
             className,
           )}
         >
-          <Checkbox checked={!!field.value} onCheckedChange={(v) => field.onChange(!!v)} className="mt-0.5" />
+          <Checkbox
+            checked={!!field.value}
+            onCheckedChange={(v) => field.onChange(!!v)}
+            className="mt-0.5"
+          />
           <span>
             <span className="font-medium text-foreground">{label}</span>
-            {description && <span className="block text-xs text-muted-foreground">{description}</span>}
+            {description && (
+              <span className="block text-xs text-muted-foreground">{description}</span>
+            )}
           </span>
         </label>
       )}

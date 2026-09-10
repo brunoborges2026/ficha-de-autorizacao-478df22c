@@ -6,7 +6,14 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { StatusBadge } from "@/components/ficha/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { authorizationsQueryOptions, signingUrl } from "@/lib/authorizations";
 import { buildWhatsappMessage, formatDateTimeBR, shortAddress, whatsappLink } from "@/lib/format";
@@ -20,7 +27,10 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { name: "description", content: "Acompanhe fichas de autorização pendentes e assinadas." },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Dashboard | Vetorial Autorizações" },
-      { property: "og:description", content: "Acompanhe fichas de autorização pendentes e assinadas." },
+      {
+        property: "og:description",
+        content: "Acompanhe fichas de autorização pendentes e assinadas.",
+      },
     ],
   }),
   component: DashboardPage,
@@ -91,7 +101,9 @@ function DashboardPage() {
   return (
     <AppShell
       title={isAdmin ? "Dashboard geral" : "Meu dashboard"}
-      description={isAdmin ? "Todas as fichas de autorização da equipe." : "Suas fichas de autorização."}
+      description={
+        isAdmin ? "Todas as fichas de autorização da equipe." : "Suas fichas de autorização."
+      }
       actions={
         <Button asChild>
           <Link to="/fichas/nova">
@@ -103,7 +115,12 @@ function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <MetricCard label="Total de fichas" value={metrics.total} icon={FileText} tone="neutral" />
         <MetricCard label="Pendentes" value={metrics.pendentes} icon={Clock} tone="warning" />
-        <MetricCard label="Assinadas" value={metrics.assinadas} icon={CheckCircle2} tone="success" />
+        <MetricCard
+          label="Assinadas"
+          value={metrics.assinadas}
+          icon={CheckCircle2}
+          tone="success"
+        />
       </div>
 
       <section className="mt-6 rounded-lg border border-border bg-card shadow-sm">
@@ -141,7 +158,9 @@ function DashboardPage() {
                   <TableRow key={a.id}>
                     <TableCell className="font-medium">
                       {a.owner?.nome ?? "—"}
-                      <span className="block text-xs text-muted-foreground">{a.owner?.telefone}</span>
+                      <span className="block text-xs text-muted-foreground">
+                        {a.owner?.telefone}
+                      </span>
                     </TableCell>
                     <TableCell className="max-w-[260px] truncate text-sm text-muted-foreground">
                       {shortAddress(a.property?.endereco)}
@@ -161,7 +180,12 @@ function DashboardPage() {
                         </Button>
                         {a.status === "pendente" && (
                           <>
-                            <Button variant="ghost" size="icon" title="Copiar link" onClick={() => copyLink(a.token)}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Copiar link"
+                              onClick={() => copyLink(a.token)}
+                            >
                               <Copy className="h-4 w-4" />
                             </Button>
                             <Button

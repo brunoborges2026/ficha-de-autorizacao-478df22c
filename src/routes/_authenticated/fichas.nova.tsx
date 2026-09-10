@@ -31,7 +31,10 @@ export const Route = createFileRoute("/_authenticated/fichas/nova")({
       { name: "description", content: "Crie uma autorização de comercialização em três etapas." },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Nova ficha | Vetorial Autorizações" },
-      { property: "og:description", content: "Crie uma autorização de comercialização em três etapas." },
+      {
+        property: "og:description",
+        content: "Crie uma autorização de comercialização em três etapas.",
+      },
     ],
   }),
   component: NovaFichaPage,
@@ -39,7 +42,12 @@ export const Route = createFileRoute("/_authenticated/fichas/nova")({
 
 const DRAFT_KEY = "vetorial:ficha-draft";
 
-type Draft = { step: number; owner: OwnerInput; property: PropertyInput; conditions: ConditionsInput };
+type Draft = {
+  step: number;
+  owner: OwnerInput;
+  property: PropertyInput;
+  conditions: ConditionsInput;
+};
 
 function loadDraft(): Draft | null {
   try {
@@ -78,7 +86,8 @@ function NovaFichaPage() {
   }, [ready, created, step, owner, property, conditions]);
 
   useEffect(() => {
-    if (ready && displayName && !property.captador) setProperty((p) => ({ ...p, captador: displayName }));
+    if (ready && displayName && !property.captador)
+      setProperty((p) => ({ ...p, captador: displayName }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, displayName]);
 
@@ -141,7 +150,11 @@ function NovaFichaPage() {
               size="lg"
               className="mt-4 h-12 w-full bg-success text-success-foreground shadow-sm hover:bg-success/90"
             >
-              <a href={whatsappLink((owner.telefone as string) ?? "", message)} target="_blank" rel="noreferrer">
+              <a
+                href={whatsappLink((owner.telefone as string) ?? "", message)}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <MessageCircle className="h-5 w-5" /> Enviar link via WhatsApp
               </a>
             </Button>

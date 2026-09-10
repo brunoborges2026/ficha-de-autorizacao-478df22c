@@ -29,7 +29,8 @@ export function AddressFields({
       const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
       const data = await res.json();
       if (!data.erro) {
-        if (data.logradouro) form.setValue(p("logradouro"), data.logradouro, { shouldValidate: true });
+        if (data.logradouro)
+          form.setValue(p("logradouro"), data.logradouro, { shouldValidate: true });
         if (data.bairro) form.setValue(p("bairro"), data.bairro, { shouldValidate: true });
         if (data.localidade) form.setValue(p("cidade"), data.localidade, { shouldValidate: true });
         if (data.uf) form.setValue(p("uf"), data.uf, { shouldValidate: true });
@@ -57,22 +58,48 @@ export function AddressFields({
               },
             })}
           />
-          {loading && <Loader2 className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-primary" />}
+          {loading && (
+            <Loader2 className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-primary" />
+          )}
         </div>
       </Field>
-      <Field label="Logradouro" required error={errors?.logradouro?.message} className="col-span-12 md:col-span-7">
+      <Field
+        label="Logradouro"
+        required
+        error={errors?.logradouro?.message}
+        className="col-span-12 md:col-span-7"
+      >
         <Input placeholder="Rua, Avenida..." {...form.register(p("logradouro"))} />
       </Field>
-      <Field label="Nº" required error={errors?.numero?.message} className="col-span-6 md:col-span-2">
+      <Field
+        label="Nº"
+        required
+        error={errors?.numero?.message}
+        className="col-span-6 md:col-span-2"
+      >
         <Input {...form.register(p("numero"))} />
       </Field>
-      <Field label="Complemento" error={errors?.complemento?.message} className="col-span-12 md:col-span-4">
+      <Field
+        label="Complemento"
+        error={errors?.complemento?.message}
+        className="col-span-12 md:col-span-4"
+      >
         <Input placeholder="Apto, bloco, casa..." {...form.register(p("complemento"))} />
       </Field>
-      <Field label="Bairro" required error={errors?.bairro?.message} className="col-span-12 md:col-span-3">
+      <Field
+        label="Bairro"
+        required
+        error={errors?.bairro?.message}
+        className="col-span-12 md:col-span-3"
+      >
         <Input {...form.register(p("bairro"))} />
       </Field>
-      <Field label="Cidade" required error={errors?.cidade?.message} className="col-span-8 md:col-span-3">
+      <Field
+        label="Cidade"
+        required
+        error={errors?.cidade?.message}
+        className="col-span-8 md:col-span-3"
+      >
         <Input {...form.register(p("cidade"))} />
       </Field>
       <SelectField

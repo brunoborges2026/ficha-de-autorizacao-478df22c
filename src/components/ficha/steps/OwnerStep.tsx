@@ -33,10 +33,24 @@ export function OwnerStep({
       noValidate
     >
       <SectionTitle>Identificação</SectionTitle>
-      <Field label="Nome completo" required error={errors.nome?.message} className="col-span-12 md:col-span-8">
-        <Input autoComplete="off" placeholder="Nome como consta no documento" {...form.register("nome")} />
+      <Field
+        label="Nome completo"
+        required
+        error={errors.nome?.message}
+        className="col-span-12 md:col-span-8"
+      >
+        <Input
+          autoComplete="off"
+          placeholder="Nome como consta no documento"
+          {...form.register("nome")}
+        />
       </Field>
-      <Field label="Data de nascimento" required error={errors.dataNascimento?.message} className="col-span-12 md:col-span-4">
+      <Field
+        label="Data de nascimento"
+        required
+        error={errors.dataNascimento?.message}
+        className="col-span-12 md:col-span-4"
+      >
         <Input type="date" {...form.register("dataNascimento")} />
       </Field>
       <Field label="RG" required error={errors.rg?.message} className="col-span-6 md:col-span-3">
@@ -46,7 +60,9 @@ export function OwnerStep({
         <Input
           inputMode="numeric"
           placeholder="000.000.000-00"
-          {...form.register("cpf", { onChange: (e) => form.setValue("cpf", maskCPF(e.target.value)) })}
+          {...form.register("cpf", {
+            onChange: (e) => form.setValue("cpf", maskCPF(e.target.value)),
+          })}
         />
       </Field>
       <SelectField
@@ -58,20 +74,43 @@ export function OwnerStep({
         error={errors.estadoCivil?.message}
         className="col-span-12 md:col-span-3"
       />
-      <Field label="Nacionalidade" required error={errors.nacionalidade?.message} className="col-span-6 md:col-span-3">
+      <Field
+        label="Nacionalidade"
+        required
+        error={errors.nacionalidade?.message}
+        className="col-span-6 md:col-span-3"
+      >
         <Input {...form.register("nacionalidade")} />
       </Field>
-      <Field label="Profissão" required error={errors.profissao?.message} className="col-span-6 md:col-span-4">
+      <Field
+        label="Profissão"
+        required
+        error={errors.profissao?.message}
+        className="col-span-6 md:col-span-4"
+      >
         <Input {...form.register("profissao")} />
       </Field>
-      <Field label="E-mail" required error={errors.email?.message} className="col-span-12 md:col-span-4">
+      <Field
+        label="E-mail"
+        required
+        error={errors.email?.message}
+        className="col-span-12 md:col-span-4"
+      >
         <Input type="email" placeholder="email@exemplo.com" {...form.register("email")} />
       </Field>
-      <Field label="Telefone / WhatsApp" required error={errors.telefone?.message} className="col-span-12 md:col-span-4" hint="Usado para enviar o link de assinatura">
+      <Field
+        label="Telefone / WhatsApp"
+        required
+        error={errors.telefone?.message}
+        className="col-span-12 md:col-span-4"
+        hint="Usado para enviar o link de assinatura"
+      >
         <Input
           inputMode="tel"
           placeholder="(12) 99999-9999"
-          {...form.register("telefone", { onChange: (e) => form.setValue("telefone", maskPhone(e.target.value)) })}
+          {...form.register("telefone", {
+            onChange: (e) => form.setValue("telefone", maskPhone(e.target.value)),
+          })}
         />
       </Field>
 

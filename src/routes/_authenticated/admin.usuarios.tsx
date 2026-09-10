@@ -11,7 +11,14 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/form/Field";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +40,10 @@ export const Route = createFileRoute("/_authenticated/admin/usuarios")({
       { name: "description", content: "Convide corretores, redefina senhas e gerencie acessos." },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Usuários | Vetorial Autorizações" },
-      { property: "og:description", content: "Convide corretores, redefina senhas e gerencie acessos." },
+      {
+        property: "og:description",
+        content: "Convide corretores, redefina senhas e gerencie acessos.",
+      },
     ],
   }),
   component: UsuariosPage,
@@ -58,7 +68,9 @@ function UsuariosPage() {
   const invite = useMutation({
     mutationFn: (email: string) => inviteFn({ data: { email, origin: window.location.origin } }),
     onSuccess: () => {
-      toast.success("Convite enviado!", { description: "O corretor definirá a senha no primeiro acesso." });
+      toast.success("Convite enviado!", {
+        description: "O corretor definirá a senha no primeiro acesso.",
+      });
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -96,7 +108,9 @@ function UsuariosPage() {
       <AppShell title="Acesso restrito">
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6">
           <ShieldAlert className="h-8 w-8 text-destructive" />
-          <p className="mt-3 text-sm text-foreground">Somente administradores podem gerenciar usuários.</p>
+          <p className="mt-3 text-sm text-foreground">
+            Somente administradores podem gerenciar usuários.
+          </p>
         </div>
       </AppShell>
     );
@@ -107,17 +121,26 @@ function UsuariosPage() {
       <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
         <h2 className="text-base font-bold text-secondary">Convidar corretor</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Informe apenas o e-mail. Ele receberá um convite e definirá a própria senha no primeiro acesso.
+          Informe apenas o e-mail. Ele receberá um convite e definirá a própria senha no primeiro
+          acesso.
         </p>
         <form
           onSubmit={form.handleSubmit((v) => invite.mutate(v.email))}
           className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
         >
-          <Field label="E-mail do corretor" error={form.formState.errors.email?.message} className="flex-1">
+          <Field
+            label="E-mail do corretor"
+            error={form.formState.errors.email?.message}
+            className="flex-1"
+          >
             <Input type="email" placeholder="corretor@vetorial.com" {...form.register("email")} />
           </Field>
           <Button type="submit" className="h-10" disabled={invite.isPending}>
-            {invite.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+            {invite.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <UserPlus className="h-4 w-4" />
+            )}
             Enviar convite
           </Button>
         </form>
@@ -154,7 +177,9 @@ function UsuariosPage() {
                         {u.role === "admin" ? "Administrador" : "Corretor"}
                       </span>
                       {u.must_set_password && (
-                        <span className="mt-1 block text-xs text-warning-foreground">Aguardando 1º acesso</span>
+                        <span className="mt-1 block text-xs text-warning-foreground">
+                          Aguardando 1º acesso
+                        </span>
                       )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
@@ -195,7 +220,8 @@ function UsuariosPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
             <AlertDialogDescription>
-              {toDelete?.email} perderá o acesso ao sistema. As fichas já criadas por ele continuam registradas.
+              {toDelete?.email} perderá o acesso ao sistema. As fichas já criadas por ele continuam
+              registradas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

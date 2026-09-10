@@ -6,7 +6,9 @@ export const formatCurrency = (v?: number | null) =>
     : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
 export const formatNumber = (v?: number | null, suffix = "") =>
-  v === undefined || v === null || Number.isNaN(v) ? "—" : `${new Intl.NumberFormat("pt-BR").format(v)}${suffix}`;
+  v === undefined || v === null || Number.isNaN(v)
+    ? "—"
+    : `${new Intl.NumberFormat("pt-BR").format(v)}${suffix}`;
 
 export const formatDateBR = (iso?: string | null) => {
   if (!iso) return "—";
@@ -41,7 +43,10 @@ export const maskCPF = (v: string) =>
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 
-export const maskCEP = (v: string) => onlyDigits(v).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
+export const maskCEP = (v: string) =>
+  onlyDigits(v)
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
 
 export const maskPhone = (v: string) => {
   const d = onlyDigits(v).slice(0, 11);
@@ -62,7 +67,11 @@ export const formatAddress = (a?: Partial<Address> | null) => {
 };
 
 export const shortAddress = (a?: Partial<Address> | null) =>
-  a ? [[a.logradouro, a.numero].filter(Boolean).join(", "), a.bairro, a.cidade].filter(Boolean).join(" - ") : "—";
+  a
+    ? [[a.logradouro, a.numero].filter(Boolean).join(", "), a.bairro, a.cidade]
+        .filter(Boolean)
+        .join(" - ")
+    : "—";
 
 export const yesNo = (v?: boolean | null) => (v ? "Sim" : "Não");
 
