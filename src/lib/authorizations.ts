@@ -61,3 +61,30 @@ export async function createAuthorization(input: {
   if (error) throw new Error(error.message);
   return data;
 }
+
+/** Brokers may only update a ficha while it is still pending (enforced by RLS too). */
+export async function updateAuthorization(
+  id: string,
+  input: { owner: OwnerData; property: PropertyData; conditions: ConditionsData },
+) {
+  const { error } = await supabase
+    .from("authorizations")
+    .update({
+      property_code: input.property.codigo || null,
+      owner: input.owner as unknown as Json,
+      property: input.property as unknown as Json,
+      conditions: input.conditions as unknown as Json,
+    })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Only admins can delete fichas (enforced by RLS). */
+export async function deleteAuthorization(id: string) {
+  const { error, count } = await supabase
+    .from("authorizations")
+    .delete({ count: "exact" })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  if (!count) throw new Error("Apenas administradores podem excluir fichas.");
+}

@@ -52,7 +52,7 @@ function loadDraft(): Draft | null {
 
 function NovaFichaPage() {
   const navigate = useNavigate();
-  const { displayName, creci, isAdmin } = useAuth();
+  const { displayName, creci } = useAuth();
   const [ready, setReady] = useState(false);
   const [step, setStep] = useState(0);
   const [owner, setOwner] = useState<OwnerInput>(ownerDefaults);
