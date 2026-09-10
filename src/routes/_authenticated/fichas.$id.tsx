@@ -1,14 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Copy, Download, Loader2, MessageCircle } from "lucide-react";
+import { ArrowLeft, Copy, Download, Loader2, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { FichaDocument } from "@/components/ficha/FichaDocument";
 import { StatusBadge } from "@/components/ficha/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { authorizationQueryOptions, signingUrl } from "@/lib/authorizations";
+import { authorizationQueryOptions, deleteAuthorization, signingUrl } from "@/lib/authorizations";
 import { buildWhatsappMessage, shortAddress, whatsappLink } from "@/lib/format";
 import { getSignatureFiles } from "@/lib/signing.functions";
 
@@ -31,6 +32,9 @@ export const Route = createFileRoute("/_authenticated/fichas/$id")({
 function FichaDetailPage() {
   const { id } = Route.useParams();
   const { displayName, creci, isAdmin } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [deleting, setDeleting] = useState(false);
   const fichaQ = useQuery(authorizationQueryOptions(id));
   const filesFn = useServerFn(getSignatureFiles);
   const filesQ = useQuery({
@@ -117,6 +121,29 @@ function FichaDetailPage() {
           ) : (
             <Button disabled variant="outline">
               {filesQ.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null} PDF indisponível
+            </Button>
+          )}
+          {isAdmin && (
+            <Button
+              variant="outline"
+              className="text-destructive hover:bg-destructive/10"
+              disabled={deleting}
+              onClick={async () => {
+                if (!confirm("Excluir esta ficha definitivamente?")) return;
+                setDeleting(true);
+                try {
+                  await deleteAuthorization(id);
+                  await queryClient.invalidateQueries({ queryKey: ["authorizations"] });
+                  toast.success("Ficha excluída.");
+                  navigate({ to: "/dashboard" });
+                } catch (e) {
+                  toast.error("Não foi possível excluir", { description: (e as Error).message });
+                } finally {
+                  setDeleting(false);
+                }
+              }}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Excluir
             </Button>
           )}
         </div>
