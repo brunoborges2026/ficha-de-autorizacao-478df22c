@@ -234,8 +234,18 @@ export const getSignatureFiles = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!sig) return null;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    return signedUrls(supabaseAdmin, sig as SignatureRecord);
+
+    let clientToUse: SupabaseClient<Database> = context.supabase;
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      // Accessing a property triggers the proxy to throw if the key is missing in the environment
+      const _s = supabaseAdmin.storage;
+      clientToUse = supabaseAdmin;
+    } catch (e) {
+      console.warn("Falling back to authenticated client because admin client is unavailable.");
+    }
+
+    return signedUrls(clientToUse, sig as SignatureRecord);
   });
 
 /** Broker/admin: persists the PDF generated for an already signed ficha in Supabase Storage. */
