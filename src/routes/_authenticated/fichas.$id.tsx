@@ -75,6 +75,11 @@ function FichaDetailPage() {
           <StatusBadge status={ficha.status} />
           {ficha.status === "pendente" ? (
             <>
+              <Button asChild variant="outline">
+                <Link to="/fichas/$id/editar" params={{ id }}>
+                  <Pencil className="h-4 w-4" /> Editar
+                </Link>
+              </Button>
               <Button
                 variant="outline"
                 onClick={async () => {
