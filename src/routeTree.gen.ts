@@ -18,6 +18,7 @@ import { Route as AssinarTokenRouteImport } from './routes/assinar.$token'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedFichasIdRouteImport } from './routes/_authenticated/fichas.$id'
 import { Route as AuthenticatedFichasNovaRouteImport } from './routes/_authenticated/fichas.nova'
+import { Route as AuthenticatedFichasIdEditarRouteImport } from './routes/_authenticated/fichas.$id.editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,12 @@ const AuthenticatedFichasNovaRoute = AuthenticatedFichasNovaRouteImport.update({
   path: '/fichas/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFichasIdEditarRoute =
+  AuthenticatedFichasIdEditarRouteImport.update({
+    id: '/editar',
+    path: '/editar',
+    getParentRoute: () => AuthenticatedFichasIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,8 +79,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/assinar/$token': typeof AssinarTokenRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
-  '/fichas/$id': typeof AuthenticatedFichasIdRoute
+  '/fichas/$id': typeof AuthenticatedFichasIdRouteWithChildren
   '/fichas/nova': typeof AuthenticatedFichasNovaRoute
+  '/fichas/$id/editar': typeof AuthenticatedFichasIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,8 +90,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/assinar/$token': typeof AssinarTokenRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
-  '/fichas/$id': typeof AuthenticatedFichasIdRoute
+  '/fichas/$id': typeof AuthenticatedFichasIdRouteWithChildren
   '/fichas/nova': typeof AuthenticatedFichasNovaRoute
+  '/fichas/$id/editar': typeof AuthenticatedFichasIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,8 +103,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/assinar/$token': typeof AssinarTokenRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
-  '/_authenticated/fichas/$id': typeof AuthenticatedFichasIdRoute
+  '/_authenticated/fichas/$id': typeof AuthenticatedFichasIdRouteWithChildren
   '/_authenticated/fichas/nova': typeof AuthenticatedFichasNovaRoute
+  '/_authenticated/fichas/$id/editar': typeof AuthenticatedFichasIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/fichas/$id'
     | '/fichas/nova'
+    | '/fichas/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/fichas/$id'
     | '/fichas/nova'
+    | '/fichas/$id/editar'
   id:
     | '__root__'
     | '/'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/fichas/$id'
     | '/_authenticated/fichas/nova'
+    | '/_authenticated/fichas/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -204,20 +217,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFichasNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/fichas/$id/editar': {
+      id: '/_authenticated/fichas/$id/editar'
+      path: '/editar'
+      fullPath: '/fichas/$id/editar'
+      preLoaderRoute: typeof AuthenticatedFichasIdEditarRouteImport
+      parentRoute: typeof AuthenticatedFichasIdRoute
+    }
   }
 }
+
+interface AuthenticatedFichasIdRouteChildren {
+  AuthenticatedFichasIdEditarRoute: typeof AuthenticatedFichasIdEditarRoute
+}
+
+const AuthenticatedFichasIdRouteChildren: AuthenticatedFichasIdRouteChildren = {
+  AuthenticatedFichasIdEditarRoute: AuthenticatedFichasIdEditarRoute,
+}
+
+const AuthenticatedFichasIdRouteWithChildren =
+  AuthenticatedFichasIdRoute._addFileChildren(
+    AuthenticatedFichasIdRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
-  AuthenticatedFichasIdRoute: typeof AuthenticatedFichasIdRoute
+  AuthenticatedFichasIdRoute: typeof AuthenticatedFichasIdRouteWithChildren
   AuthenticatedFichasNovaRoute: typeof AuthenticatedFichasNovaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
-  AuthenticatedFichasIdRoute: AuthenticatedFichasIdRoute,
+  AuthenticatedFichasIdRoute: AuthenticatedFichasIdRouteWithChildren,
   AuthenticatedFichasNovaRoute: AuthenticatedFichasNovaRoute,
 }
 

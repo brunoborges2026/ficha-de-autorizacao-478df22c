@@ -15,6 +15,13 @@
       "when": 1788995275854,
       "tag": "0001_harden_function_execute_and_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789009908062,
+      "tag": "0002_creci_and_authorization_rbac",
+      "breakpoints": true
     }
   ]
 }

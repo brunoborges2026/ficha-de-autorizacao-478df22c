@@ -51,7 +51,7 @@ export const listUsers = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ data: profiles }, { data: roles }, { data: authList }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, email, full_name, must_set_password, created_at"),
+      supabaseAdmin.from("profiles").select("id, email, full_name, must_set_password, creci, created_at"),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
     ]);
@@ -115,13 +115,18 @@ export const deleteBroker = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Marks the signed-in user's first-access password as set. */
+/** Marks the signed-in user's first-access password as set (and stores their CRECI). */
 export const markPasswordSet = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input) =>
+    z
+      .object({ creci: z.string().trim().min(3, "Informe o seu CRECI").max(40).optional() })
+      .parse(input ?? {}),
+  )
+  .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("profiles")
-      .update({ must_set_password: false })
+      .update({ must_set_password: false, ...(data.creci ? { creci: data.creci } : {}) })
       .eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };

@@ -75,6 +75,7 @@ export const whatsappLink = (phone: string, message: string) => {
 export const buildWhatsappMessage = (opts: {
   ownerName: string;
   brokerName?: string | null;
+  brokerCreci?: string | null;
   propertyAddress: string;
   link: string;
 }) => {
@@ -82,7 +83,7 @@ export const buildWhatsappMessage = (opts: {
   return [
     `Olá, ${firstName}! Tudo bem?`,
     ``,
-    `Aqui é ${opts.brokerName ? `${opts.brokerName}, ` : ""}da *Vetorial Imóveis e Arquitetura* (CRECI 30038-J).`,
+    `Aqui é ${opts.brokerName ? `${opts.brokerName}, ` : ""}da *Vetorial Imóveis e Arquitetura*${opts.brokerCreci ? ` (CRECI ${opts.brokerCreci})` : ""}.`,
     ``,
     `Preparei a *Autorização de Comercialização* do seu imóvel:`,
     `📍 ${opts.propertyAddress}`,

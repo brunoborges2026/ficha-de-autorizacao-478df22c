@@ -22,6 +22,7 @@ const schema = z
       .regex(/[a-z]/, "Inclua uma letra minúscula")
       .regex(/\d/, "Inclua um número"),
     confirm: z.string(),
+    creci: z.string().trim().max(40).optional(),
   })
   .refine((v) => v.password === v.confirm, { message: "As senhas não conferem", path: ["confirm"] });
 
@@ -57,20 +58,28 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
     };
   }, []);
 
+  const isFirstAccess = mode === "first-access";
+  const activeSchema = isFirstAccess
+    ? schema.refine((v) => !!v.creci && v.creci.length >= 3, {
+        message: "Informe o seu CRECI",
+        path: ["creci"],
+      })
+    : schema;
+
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { password: "", confirm: "" },
+    resolver: zodResolver(activeSchema),
+    defaultValues: { password: "", confirm: "", creci: "" },
   });
   const pwd = form.watch("password");
 
-  const onSubmit = form.handleSubmit(async ({ password }) => {
+  const onSubmit = form.handleSubmit(async ({ password, creci }) => {
     const { error } = await supabase.auth.updateUser({ password });
     if (error) {
       toast.error("Não foi possível salvar a senha", { description: error.message });
       return;
     }
     try {
-      await markSet();
+      await markSet({ data: creci ? { creci } : {} });
     } catch {
       /* profile flag is best-effort; the password itself is saved */
     }
@@ -122,6 +131,16 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
         <Field label="Confirmar senha" error={form.formState.errors.confirm?.message}>
           <Input type="password" autoComplete="new-password" {...form.register("confirm")} />
         </Field>
+        {isFirstAccess && (
+          <Field
+            label="Seu CRECI"
+            required
+            hint="Aparecerá como responsável nas fichas que você emitir."
+            error={form.formState.errors.creci?.message}
+          >
+            <Input placeholder="Ex.: 123456-F" {...form.register("creci")} />
+          </Field>
+        )}
         <Button type="submit" className="h-11 w-full" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
           Salvar senha e entrar

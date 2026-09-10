@@ -58,7 +58,7 @@ function MetricCard({
 }
 
 function DashboardPage() {
-  const { isAdmin, displayName } = useAuth();
+  const { isAdmin, displayName, creci } = useAuth();
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery(authorizationsQueryOptions());
 
@@ -177,6 +177,7 @@ function DashboardPage() {
                                   buildWhatsappMessage({
                                     ownerName: a.owner?.nome ?? "",
                                     brokerName: displayName,
+                                    brokerCreci: creci,
                                     propertyAddress: shortAddress(a.property?.endereco),
                                     link: signingUrl(a.token),
                                   }),
