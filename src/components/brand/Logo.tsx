@@ -1,7 +1,6 @@
-import logoAsset from "@/assets/vetorial-logo.png.asset.json";
 import { cn } from "@/lib/utils";
 
-export const LOGO_URL = logoAsset.url;
+export const LOGO_URL = "/vetorial-logo.png";
 
 export function Logo({ className, variant = "default" }: { className?: string; variant?: "default" | "light" }) {
   return (
