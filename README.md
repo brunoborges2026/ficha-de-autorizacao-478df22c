@@ -1,14 +1,21 @@
-# Welcome to your Lovable project
+# Property Deal Signer
+
+Estou anexando a ficha fisica de como é hoje, para parametros do que deve conter. estou enviando a logo separada também.  segue instruções de criação:
+
+Contexto Geral e Objetivo:
+Crie uma aplicação web responsiva para gestão e assinatura digital de "Autorizações de Comercialização de Imóveis". O sistema conecta administradores, corretores e proprietários de imóveis. A interface deve ser "Corporate / Modern", limpa, com formulários bem espaçados, transmitindo confiança e precisão arquitetônica.  Design System e Estilo (Baseado no DESIGN.md):Cores Principais: Use #ea580c (Laranja/Primary) para botões principais, chamadas de ação e foco. Use #0f172a (Slate Navy/Secondary) para fundos escuros, textos de alto contraste e ações terminais como "Gerar Ficha".  Fundos e Superfícies: Background geral em #f8fafc e cards em #ffffff com bordas sutis em #e2e8f0.  Tipografia: Plus Jakarta Sans para títulos e cabeçalhos (ex: "1. Proprietário"). Inter para inputs, labels e textos de dados.  Estilo UI: Bordas arredondadas de 0.375rem (6px) para inputs/botões e 0.5rem (8px) para cards. Elevação (sombras) suaves para elementos em foco ou modais.  Nota de Design: Os layouts devem ser mais bonitos e modernos que um formulário padrão, utilizando grids de 12 colunas no desktop (agrupando campos menores na mesma linha, como RG/CPF) e empilhamento em mobile.  Autenticação e Regras de Usuários (Supabase Auth):Admin: Tem acesso a um dashboard geral. Pode criar novos usuários (corretores) apenas inserindo o e-mail. Pode resetar senhas e excluir usuários.Corretor (Broker): Ao ser criado pelo Admin, no seu primeiro login, o sistema deve identificar que é o primeiro acesso e forçar a criação de uma senha segura (que será salva no banco).Proprietário (Público): Não precisa de login. Acessa apenas a ficha gerada através de um link único (token) gerado pelo sistema.Telas e Fluxos do Corretor:Dashboard: Deve exibir métricas (Total de fichas, Pendentes, Assinadas). Uma tabela ou lista de "Fichas Recentes" mostrando Nome do Proprietário, Endereço, Data, Status (Pendente/Assinado) e botão de ações (Detalhes, Baixar PDF, Reenviar Link).Criação de Nova Ficha (Wizard de 3 Etapas):Deve ser um formulário dividido em 3 passos com um "Stepper" visual no topo.  Etapa 1 (Proprietário): Nome, RG, CPF, Data Nasc., Estado Civil, Nacionalidade, Profissão, Endereço Completo (CEP, Logradouro, Número, Comp, Bairro, Cidade, UF), E-mail e Telefone/WhatsApp.Etapa 2 (Imóvel): Logradouro, Número, Comp, Bairro, Cidade, UF, CEP, Tipo (Casa, Apto, etc.), Estado (Novo/Usado), Matrícula, IPTU, Distribuição (Dormitórios, Suítes, Banheiros, Vagas, etc.), Metragens (Terreno, Construída, Útil), Dados do Condomínio e IPTU (Valores).Etapa 3 (Condições): Valor de Venda, Valor de Locação, Administração Imobiliária (Sim/Não), Exclusividade (Sim/Não), Permuta, Honorários e Observações.Finalização da Ficha:Ao clicar em "Gerar Ficha", o sistema salva no banco (status: "Pendente") e gera um Link Único.Exibe uma tela de Sucesso com o link gerado e um botão verde brilhante "Enviar link via WhatsApp".Ao clicar neste botão, deve abrir a API do WhatsApp (wa.me/numero) com uma mensagem de texto pré-formatada, educada e organizada, explicando do que se trata e enviando o link.Tela do Proprietário (Visão Externa - Mobile First):Carregamento e Permissões: Ao abrir o link, o sistema deve solicitar imediatamente permissão para acessar a Localização (GPS) e a Câmera do dispositivo.Leitura de Dados: O proprietário vê um formulário compilado e formatado apenas para leitura (estilo documento), mostrando todos os dados preenchidos pelo corretor nas 3 etapas.Captura de Selfie: Um componente de upload ou câmera (Abrir Câmera e Tirar Selfie) exigindo uma foto do rosto segurando um documento.Assinatura Digital (Canvas): Um campo de assinatura estilo touch (Canvas API) onde o usuário pode desenhar a assinatura com o dedo ou mouse. Deve ter a opção "Refazer Assinatura".Termos e Finalização: Um checkbox "Li e concordo com os termos e confirmo a veracidade". Um botão final "Assinar e Enviar Documento".Captura de Metadados (Background): No clique final, o sistema deve capturar: Data e Hora atual (Fuso horário de Brasília), IP, Aparelho/Navegador (User-Agent), Coordenadas GPS (Lat/Long) e gerar um Hash único de validação.Geração de PDF e Conclusão:Ao enviar, o sistema processa a assinatura e gera um arquivo PDF contendo todas as informações, a selfie, a imagem da assinatura e um rodapé/certificado com os metadados e o Hash de validação.O proprietário visualiza a tela de sucesso com a opção de baixar o PDF gerado.Se qualquer pessoa acessar esse mesmo link depois, ele não mostrará mais o formulário de assinar, mas sim a visualização do PDF finalizado.No Dashboard do Corretor, o status desta ficha muda automaticamente de "Pendente" para "Assinado".Stack Técnica Exigida no Lovable:React com Tailwind CSS.Supabase (para Auth, Database, Storage de imagens/PDFs).react-signature-canvas (ou similar) para a assinatura digital.html2pdf.js ou @react-pdf/renderer para geração do documento final.react-hook-form + zod para validação e estados do Wizard em 3 passos.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://ficha-de-autorizacao.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/1a3859f7-26b3-41ca-b591-97715afd0b1c).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +27,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
