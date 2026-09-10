@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/fichas/$id")({
 
 function FichaDetailPage() {
   const { id } = Route.useParams();
-  const { displayName } = useAuth();
+  const { displayName, creci, isAdmin } = useAuth();
   const fichaQ = useQuery(authorizationQueryOptions(id));
   const filesFn = useServerFn(getSignatureFiles);
   const filesQ = useQuery({
@@ -91,6 +91,7 @@ function FichaDetailPage() {
                     buildWhatsappMessage({
                       ownerName: ficha.owner?.nome ?? "",
                       brokerName: displayName,
+                      brokerCreci: creci,
                       propertyAddress: shortAddress(ficha.property?.endereco),
                       link,
                     }),

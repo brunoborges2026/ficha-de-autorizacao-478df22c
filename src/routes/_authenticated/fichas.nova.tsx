@@ -52,7 +52,7 @@ function loadDraft(): Draft | null {
 
 function NovaFichaPage() {
   const navigate = useNavigate();
-  const { displayName } = useAuth();
+  const { displayName, creci, isAdmin } = useAuth();
   const [ready, setReady] = useState(false);
   const [step, setStep] = useState(0);
   const [owner, setOwner] = useState<OwnerInput>(ownerDefaults);
@@ -105,6 +105,7 @@ function NovaFichaPage() {
     const message = buildWhatsappMessage({
       ownerName: (owner.nome as string) ?? "",
       brokerName: displayName,
+      brokerCreci: creci,
       propertyAddress: shortAddress(property.endereco),
       link,
     });
