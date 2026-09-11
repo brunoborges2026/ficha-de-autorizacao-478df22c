@@ -34,7 +34,10 @@ function clientIp(request: Request | undefined) {
   );
 }
 
-type PublicAuthorization = Omit<AuthorizationRecord, "broker_id"> & { broker_name: string | null };
+type PublicAuthorization = Omit<AuthorizationRecord, "broker_id"> & {
+  broker_name: string | null;
+  broker_creci: string | null;
+};
 export type PublicSignature = Omit<SignatureRecord, "selfie_path" | "signature_path"> & {
   selfie_url: string | null;
   signature_url: string | null;
@@ -49,9 +52,9 @@ async function signedUrls(
   const paths = [sig.selfie_path, sig.signature_path, sig.pdf_path].filter(Boolean) as string[];
   const { data } = await admin.storage.from(BUCKET).createSignedUrls(paths, URL_TTL);
   const map = new Map<string, string>();
-  (data ?? []).forEach(
-    (d: { path: string | null; signedUrl: string }) => d.path && map.set(d.path, d.signedUrl),
-  );
+  (data ?? []).forEach((d) => {
+    if (d.path && d.signedUrl) map.set(d.path, d.signedUrl);
+  });
   const { selfie_path, signature_path, ...rest } = sig;
   return {
     ...rest,
@@ -79,7 +82,7 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const [{ data: broker }, { data: sig }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("full_name, email")
+        .select("full_name, email, creci")
         .eq("id", auth.broker_id)
         .maybeSingle(),
       supabaseAdmin.from("signatures").select("*").eq("authorization_id", auth.id).maybeSingle(),
@@ -89,6 +92,7 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const authorization: PublicAuthorization = {
       ...(rest as unknown as Omit<AuthorizationRecord, "broker_id">),
       broker_name: broker?.full_name ?? broker?.email ?? null,
+      broker_creci: broker?.creci ?? null,
     };
     return {
       authorization,

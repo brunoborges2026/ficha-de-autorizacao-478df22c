@@ -18,7 +18,12 @@ import { FichaDocument } from "@/components/ficha/FichaDocument";
 import { StatusBadge } from "@/components/ficha/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { authorizationQueryOptions, deleteAuthorization, signingUrl } from "@/lib/authorizations";
+import {
+  authorizationQueryOptions,
+  brokerProfileQueryOptions,
+  deleteAuthorization,
+  signingUrl,
+} from "@/lib/authorizations";
 import { buildWhatsappMessage, shortAddress, whatsappLink } from "@/lib/format";
 import { getSignatureFiles, saveSignedPdfForAuthorization } from "@/lib/signing.functions";
 import { downloadFichaPdf } from "@/lib/generate-pdf";
@@ -44,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/fichas/$id")({
 
 function FichaDetailPage() {
   const { id } = Route.useParams();
-  const { displayName, creci, isAdmin } = useAuth();
+  const { displayName, fullName, creci, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
@@ -59,6 +64,10 @@ function FichaDetailPage() {
   });
 
   const ficha = fichaQ.data;
+  const brokerQ = useQuery(brokerProfileQueryOptions(ficha?.broker_id));
+  const brokerName = brokerQ.data?.full_name || fullName || displayName;
+  const brokerCreci = brokerQ.data?.creci || creci;
+
 
   const handleGenerateAndDownloadPdf = async () => {
     if (!ficha) return;
@@ -71,7 +80,8 @@ function FichaDetailPage() {
         property: ficha.property,
         conditions: ficha.conditions,
         createdAt: ficha.created_at,
-        brokerName: ficha.broker_name || displayName,
+        brokerName,
+        brokerCreci,
         selfieDataUrl: sigData?.selfie_url ?? null,
         signatureDataUrl: sigData?.signature_url ?? null,
         meta: sigData
@@ -162,7 +172,7 @@ function FichaDetailPage() {
                     ficha.owner?.telefone ?? "",
                     buildWhatsappMessage({
                       ownerName: ficha.owner?.nome ?? "",
-                      brokerName: displayName,
+                      brokerName: fullName,
                       brokerCreci: creci,
                       propertyAddress: shortAddress(ficha.property?.endereco),
                       link,
@@ -251,6 +261,8 @@ function FichaDetailPage() {
           property: ficha.property,
           conditions: ficha.conditions,
           created_at: ficha.created_at,
+          broker_name: brokerName,
+          broker_creci: brokerCreci,
         }}
         signature={filesQ.data ?? null}
       />

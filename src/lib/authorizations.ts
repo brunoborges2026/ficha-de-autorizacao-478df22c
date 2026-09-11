@@ -39,6 +39,20 @@ export const authorizationQueryOptions = (id: string) => ({
   },
 });
 
+/** Broker who issued a ficha (own profile, or any profile when the caller is an admin). */
+export const brokerProfileQueryOptions = (brokerId: string | undefined) => ({
+  queryKey: ["broker-profile", brokerId],
+  enabled: !!brokerId,
+  queryFn: async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("full_name, email, creci")
+      .eq("id", brokerId!)
+      .maybeSingle();
+    return data ?? null;
+  },
+});
+
 export async function createAuthorization(input: {
   owner: OwnerData;
   property: PropertyData;

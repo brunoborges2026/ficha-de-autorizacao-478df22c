@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { COMPANY, type ConditionsData, type OwnerData, type PropertyData } from "@/lib/schemas";
 import {
@@ -18,7 +19,25 @@ export type FichaData = {
   conditions: ConditionsData;
   created_at: string;
   broker_name?: string | null;
+  broker_creci?: string | null;
 };
+
+export const LEI_14063_LABEL = "Assinatura Eletrônica em conformidade com a Lei nº 14.063";
+
+/** Compliance seal shown on the signing screen and inside the digital signature certificate. */
+export function ComplianceBadge({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-2 rounded-md border border-secondary/25 bg-secondary/5 px-3 py-1.5 text-[11px] font-semibold leading-tight text-secondary",
+        className,
+      )}
+    >
+      <ShieldCheck className="h-4 w-4 shrink-0 text-success" />
+      {LEI_14063_LABEL}
+    </span>
+  );
+}
 
 export type Row = { label: string; value: ReactNode; wide?: boolean };
 
@@ -217,9 +236,12 @@ export function FichaDocument({
 
         {signature && (
           <section className="space-y-4 rounded-md border border-success/30 bg-success/5 p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-success">
-              Certificado de assinatura digital
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-success">
+                Certificado de assinatura digital
+              </p>
+              <ComplianceBadge className="bg-card" />
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {signature.selfie_url && (
                 <figure>
@@ -265,6 +287,13 @@ export function FichaDocument({
                   value: (
                     <code className="break-all font-mono text-xs">{signature.validation_hash}</code>
                   ),
+                  wide: true,
+                },
+                {
+                  label: "Corretor responsável pela emissão",
+                  value: data.broker_name
+                    ? `${data.broker_name}${data.broker_creci ? ` — CRECI ${data.broker_creci}` : ""}`
+                    : "—",
                   wide: true,
                 },
               ]}

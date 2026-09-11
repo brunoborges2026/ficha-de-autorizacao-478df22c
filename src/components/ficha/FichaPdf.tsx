@@ -15,6 +15,7 @@ export type FichaPdfProps = {
   conditions: ConditionsData;
   createdAt: string;
   brokerName?: string | null;
+  brokerCreci?: string | null;
   logoDataUrl?: string | null;
   selfieDataUrl?: string | null;
   signatureDataUrl?: string | null;
@@ -70,6 +71,16 @@ const s = StyleSheet.create({
   signature: { height: 90, objectFit: "contain" },
   certBox: { marginTop: 12, padding: 8, borderWidth: 1, borderColor: "#0f172a" },
   certTitle: { fontSize: 9, fontWeight: 700, marginBottom: 6 },
+  seal: {
+    marginTop: 8,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: "#0f172a",
+    backgroundColor: "#f8fafc",
+    fontSize: 8,
+    fontWeight: 700,
+    textAlign: "center",
+  },
   hash: { fontSize: 7, fontFamily: "Courier" },
   footer: {
     position: "absolute",
@@ -175,10 +186,20 @@ export function FichaPdf(props: FichaPdfProps) {
                   },
                   { label: "CPF do signatário", value: owner.cpf },
                   { label: "Dispositivo / Navegador", value: meta.userAgent ?? "—", wide: true },
+                  {
+                    label: "Corretor responsável pela emissão",
+                    value: props.brokerName
+                      ? `${props.brokerName}${props.brokerCreci ? ` — CRECI ${props.brokerCreci}` : ""}`
+                      : "—",
+                    wide: true,
+                  },
                 ]}
               />
               <Text style={s.label}>Hash de validação (SHA-256)</Text>
               <Text style={s.hash}>{meta.validationHash}</Text>
+              <Text style={s.seal}>
+                Assinatura Eletrônica em conformidade com a Lei nº 14.063
+              </Text>
               <Text style={{ ...s.muted, marginTop: 6 }}>
                 Documento assinado eletronicamente. A integridade pode ser verificada junto à{" "}
                 {COMPANY.name} pelo hash acima, que vincula os dados desta ficha, a selfie, a
