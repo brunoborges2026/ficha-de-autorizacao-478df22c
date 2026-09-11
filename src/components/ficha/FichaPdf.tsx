@@ -15,6 +15,7 @@ export type FichaPdfProps = {
   conditions: ConditionsData;
   createdAt: string;
   brokerName?: string | null;
+  brokerCreci?: string | null;
   logoDataUrl?: string | null;
   selfieDataUrl?: string | null;
   signatureDataUrl?: string | null;
@@ -70,6 +71,16 @@ const s = StyleSheet.create({
   signature: { height: 90, objectFit: "contain" },
   certBox: { marginTop: 12, padding: 8, borderWidth: 1, borderColor: "#0f172a" },
   certTitle: { fontSize: 9, fontWeight: 700, marginBottom: 6 },
+  seal: {
+    marginTop: 8,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: "#0f172a",
+    backgroundColor: "#f8fafc",
+    fontSize: 8,
+    fontWeight: 700,
+    textAlign: "center",
+  },
   hash: { fontSize: 7, fontFamily: "Courier" },
   footer: {
     position: "absolute",
