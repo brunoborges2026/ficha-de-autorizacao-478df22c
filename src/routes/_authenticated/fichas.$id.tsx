@@ -80,7 +80,8 @@ function FichaDetailPage() {
         property: ficha.property,
         conditions: ficha.conditions,
         createdAt: ficha.created_at,
-        brokerName: ficha.broker_name || displayName,
+        brokerName,
+        brokerCreci,
         selfieDataUrl: sigData?.selfie_url ?? null,
         signatureDataUrl: sigData?.signature_url ?? null,
         meta: sigData
