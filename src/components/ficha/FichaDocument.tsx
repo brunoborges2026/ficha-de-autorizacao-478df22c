@@ -236,9 +236,12 @@ export function FichaDocument({
 
         {signature && (
           <section className="space-y-4 rounded-md border border-success/30 bg-success/5 p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-success">
-              Certificado de assinatura digital
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-success">
+                Certificado de assinatura digital
+              </p>
+              <ComplianceBadge className="bg-card" />
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {signature.selfie_url && (
                 <figure>
@@ -284,6 +287,13 @@ export function FichaDocument({
                   value: (
                     <code className="break-all font-mono text-xs">{signature.validation_hash}</code>
                   ),
+                  wide: true,
+                },
+                {
+                  label: "Corretor responsável pela emissão",
+                  value: data.broker_name
+                    ? `${data.broker_name}${data.broker_creci ? ` — CRECI ${data.broker_creci}` : ""}`
+                    : "—",
                   wide: true,
                 },
               ]}
