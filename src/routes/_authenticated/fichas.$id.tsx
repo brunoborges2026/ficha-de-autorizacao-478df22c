@@ -172,7 +172,7 @@ function FichaDetailPage() {
                     ficha.owner?.telefone ?? "",
                     buildWhatsappMessage({
                       ownerName: ficha.owner?.nome ?? "",
-                      brokerName: displayName,
+                      brokerName: fullName,
                       brokerCreci: creci,
                       propertyAddress: shortAddress(ficha.property?.endereco),
                       link,
@@ -261,6 +261,8 @@ function FichaDetailPage() {
           property: ficha.property,
           conditions: ficha.conditions,
           created_at: ficha.created_at,
+          broker_name: brokerName,
+          broker_creci: brokerCreci,
         }}
         signature={filesQ.data ?? null}
       />
