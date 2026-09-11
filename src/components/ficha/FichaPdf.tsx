@@ -186,10 +186,20 @@ export function FichaPdf(props: FichaPdfProps) {
                   },
                   { label: "CPF do signatário", value: owner.cpf },
                   { label: "Dispositivo / Navegador", value: meta.userAgent ?? "—", wide: true },
+                  {
+                    label: "Corretor responsável pela emissão",
+                    value: props.brokerName
+                      ? `${props.brokerName}${props.brokerCreci ? ` — CRECI ${props.brokerCreci}` : ""}`
+                      : "—",
+                    wide: true,
+                  },
                 ]}
               />
               <Text style={s.label}>Hash de validação (SHA-256)</Text>
               <Text style={s.hash}>{meta.validationHash}</Text>
+              <Text style={s.seal}>
+                Assinatura Eletrônica em conformidade com a Lei nº 14.063
+              </Text>
               <Text style={{ ...s.muted, marginTop: 6 }}>
                 Documento assinado eletronicamente. A integridade pode ser verificada junto à{" "}
                 {COMPANY.name} pelo hash acima, que vincula os dados desta ficha, a selfie, a
