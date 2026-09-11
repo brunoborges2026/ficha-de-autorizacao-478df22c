@@ -87,6 +87,7 @@ function SignPage() {
             conditions: authorization.conditions,
             created_at: authorization.created_at,
             broker_name: authorization.broker_name,
+            broker_creci: authorization.broker_creci,
           } as unknown as FichaData)
         : null,
     [authorization],
@@ -116,6 +117,7 @@ function SignPage() {
         conditions: ficha.conditions,
         createdAt: ficha.created_at,
         brokerName: ficha.broker_name ?? null,
+        brokerCreci: ficha.broker_creci ?? null,
         selfieDataUrl: selfie,
         signatureDataUrl: signature,
         meta,
