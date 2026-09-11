@@ -82,7 +82,7 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const [{ data: broker }, { data: sig }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("full_name, email")
+        .select("full_name, email, creci")
         .eq("id", auth.broker_id)
         .maybeSingle(),
       supabaseAdmin.from("signatures").select("*").eq("authorization_id", auth.id).maybeSingle(),
@@ -92,6 +92,7 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const authorization: PublicAuthorization = {
       ...(rest as unknown as Omit<AuthorizationRecord, "broker_id">),
       broker_name: broker?.full_name ?? broker?.email ?? null,
+      broker_creci: broker?.creci ?? null,
     };
     return {
       authorization,
