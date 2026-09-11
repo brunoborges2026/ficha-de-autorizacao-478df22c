@@ -18,7 +18,12 @@ import { FichaDocument } from "@/components/ficha/FichaDocument";
 import { StatusBadge } from "@/components/ficha/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { authorizationQueryOptions, deleteAuthorization, signingUrl } from "@/lib/authorizations";
+import {
+  authorizationQueryOptions,
+  brokerProfileQueryOptions,
+  deleteAuthorization,
+  signingUrl,
+} from "@/lib/authorizations";
 import { buildWhatsappMessage, shortAddress, whatsappLink } from "@/lib/format";
 import { getSignatureFiles, saveSignedPdfForAuthorization } from "@/lib/signing.functions";
 import { downloadFichaPdf } from "@/lib/generate-pdf";
