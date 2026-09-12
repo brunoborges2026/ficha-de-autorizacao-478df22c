@@ -68,7 +68,6 @@ function FichaDetailPage() {
   const brokerName = brokerQ.data?.full_name || fullName || displayName;
   const brokerCreci = brokerQ.data?.creci || creci;
 
-
   const handleGenerateAndDownloadPdf = async () => {
     if (!ficha) return;
     setGeneratingPdf(true);

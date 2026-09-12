@@ -163,23 +163,7 @@ function SignPage() {
   return (
     <Shell>
       <div className="space-y-5">
-        {finished ? (
-          <div className="rounded-lg border border-success/30 bg-success/5 p-6 text-center shadow-sm">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
-            <h1 className="mt-3 text-lg font-bold text-secondary">Documento assinado</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              A autorização do imóvel {shortAddress(ficha.property.endereco)} foi assinada
-              digitalmente e enviada à {COMPANY.name}.
-            </p>
-            {pdfUrl && (
-              <Button asChild className="mt-4">
-                <a href={pdfUrl} target="_blank" rel="noreferrer">
-                  <Download className="mr-2 h-4 w-4" /> Baixar PDF assinado
-                </a>
-              </Button>
-            )}
-          </div>
-        ) : (
+        {!finished && (
           <header className="rounded-lg border border-border bg-card p-5 shadow-sm">
             <h1 className="text-lg font-bold text-secondary">
               Olá, {ficha.owner.nome.split(" ")[0]}! Confira e assine sua autorização
@@ -201,7 +185,23 @@ function SignPage() {
 
         <FichaDocument data={ficha} signature={finished ? existingSignature : null} />
 
-        {!finished && (
+        {finished ? (
+          <div className="rounded-lg border border-success/30 bg-success/5 p-6 text-center shadow-sm">
+            <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
+            <h1 className="mt-3 text-lg font-bold text-secondary">Documento assinado</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              A autorização do imóvel {shortAddress(ficha.property.endereco)} foi assinada
+              digitalmente e enviada à {COMPANY.name}.
+            </p>
+            {pdfUrl && (
+              <Button asChild className="mt-4">
+                <a href={pdfUrl} target="_blank" rel="noreferrer">
+                  <Download className="mr-2 h-4 w-4" /> Baixar PDF assinado
+                </a>
+              </Button>
+            )}
+          </div>
+        ) : (
           <div className="space-y-6 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
             <DocSection number="4" title="Selfie com documento">
               <SelfieCapture value={selfie} onChange={setSelfie} />

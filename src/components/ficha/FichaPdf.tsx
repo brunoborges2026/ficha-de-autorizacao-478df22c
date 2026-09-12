@@ -41,57 +41,119 @@ const s = StyleSheet.create({
   headerRight: { textAlign: "right" },
   title: { fontSize: 13, fontWeight: 700 },
   muted: { color: "#64748b", fontSize: 7.5 },
-  sectionTitle: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: "#ffffff",
+  sectionTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  sectionTitleBadge: {
     backgroundColor: "#ea580c",
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    marginTop: 12,
-    marginBottom: 6,
+    color: "#ffffff",
+    width: 16,
+    height: 16,
+    borderRadius: 3,
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 9,
+    fontWeight: 700,
+    marginRight: 6,
   },
-  rows: { flexDirection: "row", flexWrap: "wrap" },
-  cell: { width: "50%", paddingRight: 8, marginBottom: 5 },
-  cellWide: { width: "100%", paddingRight: 8, marginBottom: 5 },
-  label: { fontSize: 6.5, color: "#64748b", textTransform: "uppercase" },
-  value: { fontSize: 8.5 },
-  term: {
-    marginTop: 12,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#f8fafc",
-    lineHeight: 1.5,
-    fontSize: 8.5,
+  sectionTitleText: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: "#0f172a",
   },
-  imagesRow: { flexDirection: "row", gap: 12, marginTop: 10 },
-  imageBox: { width: "48%", borderWidth: 1, borderColor: "#e2e8f0", padding: 4 },
-  selfie: { height: 150, objectFit: "cover" },
-  signature: { height: 90, objectFit: "contain" },
-  certBox: { marginTop: 12, padding: 8, borderWidth: 1, borderColor: "#0f172a" },
-  certTitle: { fontSize: 9, fontWeight: 700, marginBottom: 6 },
-  seal: {
-    marginTop: 8,
-    padding: 6,
+  rows: { flexDirection: "row", flexWrap: "wrap", gap: 0 },
+  cell: { width: "50%", paddingRight: 10, marginBottom: 8 },
+  cellWide: { width: "100%", paddingRight: 10, marginBottom: 8 },
+  label: {
+    fontSize: 7,
+    color: "#64748b",
+    textTransform: "uppercase",
+    fontWeight: 700,
+    marginBottom: 2,
+  },
+  value: { fontSize: 9, color: "#0f172a" },
+  termContainer: {
+    marginTop: 16,
+    padding: 12,
     borderWidth: 1,
-    borderColor: "#0f172a",
-    backgroundColor: "#f8fafc",
+    borderColor: "#fed7aa", // orange-200
+    backgroundColor: "#fff7ed", // orange-50
+    borderRadius: 4,
+  },
+  termTitle: {
     fontSize: 8,
     fontWeight: 700,
-    textAlign: "center",
+    color: "#ea580c",
+    textTransform: "uppercase",
+    marginBottom: 4,
   },
-  hash: { fontSize: 7, fontFamily: "Courier" },
+  termText: {
+    lineHeight: 1.5,
+    fontSize: 8.5,
+    color: "#0f172a",
+  },
+  imagesRow: { flexDirection: "row", gap: 12, marginTop: 10 },
+  imageBox: {
+    width: "48%",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    padding: 4,
+    borderRadius: 4,
+    backgroundColor: "#ffffff",
+  },
+  selfie: { height: 160, objectFit: "cover", borderRadius: 2 },
+  signature: { height: 90, objectFit: "contain" },
+  certBox: {
+    marginTop: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#86efac",
+    backgroundColor: "#f0fdf4",
+    borderRadius: 4,
+  },
+  certTitle: {
+    fontSize: 8,
+    fontWeight: 700,
+    color: "#16a34a",
+    textTransform: "uppercase",
+    marginBottom: 10,
+  },
+  seal: {
+    marginTop: 10,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    backgroundColor: "#f8fafc",
+    fontSize: 7.5,
+    fontWeight: 700,
+    textAlign: "center",
+    borderRadius: 4,
+  },
+  hash: { fontSize: 7, fontFamily: "Courier", color: "#64748b", marginTop: 2 },
   footer: {
     position: "absolute",
     bottom: 18,
     left: 32,
     right: 32,
-    fontSize: 6.5,
+    fontSize: 7,
     color: "#64748b",
     textAlign: "center",
   },
 });
+
+function SectionTitle({ number, title }: { number: string; title: string }) {
+  return (
+    <View style={s.sectionTitleContainer}>
+      <View style={s.sectionTitleBadge}>
+        <Text>{number}</Text>
+      </View>
+      <Text style={s.sectionTitleText}>{title}</Text>
+    </View>
+  );
+}
 
 function Rows({ rows }: { rows: { label: string; value: unknown; wide?: boolean }[] }) {
   return (
@@ -129,28 +191,28 @@ export function FichaPdf(props: FichaPdfProps) {
           </View>
         </View>
 
-        <Text style={s.sectionTitle}>1. Proprietário</Text>
+        <SectionTitle number="1" title="Proprietário" />
         <Rows rows={buildOwnerRows(owner)} />
 
-        <Text style={s.sectionTitle}>2. Imóvel</Text>
+        <SectionTitle number="2" title="Imóvel" />
         <Rows rows={buildPropertyRows(property)} />
 
-        <Text style={s.sectionTitle}>3. Condições de comercialização</Text>
+        <SectionTitle number="3" title="Condições de comercialização" />
         <Rows rows={buildConditionsRows(conditions)} />
 
-        <View style={s.term}>
-          <Text>{authorizationText(owner, property, conditions)}</Text>
-          <Text style={{ marginTop: 6 }}>
+        <View style={s.termContainer} wrap={false}>
+          <Text style={s.termTitle}>Termo de Autorização</Text>
+          <Text style={s.termText}>{authorizationText(owner, property, conditions)}</Text>
+          <Text style={[s.termText, { marginTop: 6, fontWeight: 700 }]}>
             {COMPANY.city}, {formatLongDateBR(meta?.signedAt || props.createdAt)}
             {props.brokerName ? ` • Captação: ${props.brokerName}` : ""}
+            {props.brokerCreci ? ` (CRECI ${props.brokerCreci})` : ""}
           </Text>
         </View>
 
         {meta && (
-          <>
-            <Text style={s.sectionTitle} break>
-              4. Certificado de Assinatura Digital
-            </Text>
+          <View wrap={false}>
+            <SectionTitle number="4" title="Certificado de Assinatura Digital" />
             {(props.selfieDataUrl || props.signatureDataUrl) && (
               <View style={s.imagesRow}>
                 {props.selfieDataUrl ? (
@@ -197,16 +259,14 @@ export function FichaPdf(props: FichaPdfProps) {
               />
               <Text style={s.label}>Hash de validação (SHA-256)</Text>
               <Text style={s.hash}>{meta.validationHash}</Text>
-              <Text style={s.seal}>
-                Assinatura Eletrônica em conformidade com a Lei nº 14.063
-              </Text>
+              <Text style={s.seal}>Assinatura Eletrônica em conformidade com a Lei nº 14.063</Text>
               <Text style={{ ...s.muted, marginTop: 6 }}>
                 Documento assinado eletronicamente. A integridade pode ser verificada junto à{" "}
                 {COMPANY.name} pelo hash acima, que vincula os dados desta ficha, a selfie, a
                 assinatura e o instante da assinatura.
               </Text>
             </View>
-          </>
+          </View>
         )}
 
         <Text style={s.footer} fixed>

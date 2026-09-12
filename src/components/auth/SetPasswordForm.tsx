@@ -23,6 +23,7 @@ const schema = z
       .regex(/\d/, "Inclua um número"),
     confirm: z.string(),
     creci: z.string().trim().max(40).optional(),
+    fullName: z.string().trim().max(120).optional(),
   })
   .refine((v) => v.password === v.confirm, {
     message: "As senhas não conferem",
@@ -67,26 +68,39 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
 
   const isFirstAccess = mode === "first-access";
   const activeSchema = isFirstAccess
-    ? schema.refine((v) => !!v.creci && v.creci.length >= 3, {
-        message: "Informe o seu CRECI",
-        path: ["creci"],
-      })
+    ? schema
+        .refine((v) => !!v.fullName && v.fullName.length >= 3, {
+          message: "Informe o seu nome completo",
+          path: ["fullName"],
+        })
+        .refine((v) => !!v.creci && v.creci.length >= 3, {
+          message: "Informe o seu CRECI",
+          path: ["creci"],
+        })
     : schema;
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(activeSchema),
-    defaultValues: { password: "", confirm: "", creci: "" },
+    defaultValues: { password: "", confirm: "", creci: "", fullName: "" },
   });
   const pwd = form.watch("password");
 
-  const onSubmit = form.handleSubmit(async ({ password, creci }) => {
-    const { error } = await supabase.auth.updateUser({ password });
+  const onSubmit = form.handleSubmit(async ({ password, creci, fullName }) => {
+    const { error } = await supabase.auth.updateUser({
+      password,
+      ...(isFirstAccess && fullName ? { data: { full_name: fullName } } : {}),
+    });
     if (error) {
       toast.error("Não foi possível salvar a senha", { description: error.message });
       return;
     }
     try {
-      await markSet({ data: creci ? { creci } : {} });
+      await markSet({
+        data: {
+          ...(creci ? { creci } : {}),
+          ...(fullName ? { fullName } : {}),
+        },
+      });
     } catch {
       /* profile flag is best-effort; the password itself is saved */
     }
@@ -124,6 +138,11 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
   return (
     <AuthCard title={title} description={description}>
       <form onSubmit={onSubmit} className="space-y-4">
+        {isFirstAccess && (
+          <Field label="Nome completo" required error={form.formState.errors.fullName?.message}>
+            <Input placeholder="Ex.: João da Silva" {...form.register("fullName")} />
+          </Field>
+        )}
         <Field label="Nova senha" error={form.formState.errors.password?.message}>
           <Input type="password" autoComplete="new-password" {...form.register("password")} />
         </Field>
