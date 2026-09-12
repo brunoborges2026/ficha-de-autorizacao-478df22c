@@ -131,25 +131,18 @@ export const deleteBroker = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Marks the signed-in user's first-access password as set (and stores name + CRECI). */
+/** Marks the signed-in user's first-access password as set (and stores their CRECI). */
 export const markPasswordSet = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
     z
-      .object({
-        creci: z.string().trim().min(3, "Informe o seu CRECI").max(40).optional(),
-        fullName: z.string().trim().min(3, "Informe o seu nome completo").max(120).optional(),
-      })
+      .object({ creci: z.string().trim().min(3, "Informe o seu CRECI").max(40).optional() })
       .parse(input ?? {}),
   )
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("profiles")
-      .update({
-        must_set_password: false,
-        ...(data.creci ? { creci: data.creci } : {}),
-        ...(data.fullName ? { full_name: data.fullName } : {}),
-      })
+      .update({ must_set_password: false, ...(data.creci ? { creci: data.creci } : {}) })
       .eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };

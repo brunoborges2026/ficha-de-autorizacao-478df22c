@@ -33,8 +33,8 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
-    const SUPABASE_URL = process.env["SUPABASE_URL"];
-    const SUPABASE_PUBLISHABLE_KEY = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    const SUPABASE_URL = process.env["SUPABASE_URL"] || "https://pgvitvsbxrsriethvsmg.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = process.env["SUPABASE_PUBLISHABLE_KEY"] || "sb_publishable_E2dO-YEY1IahoU6-gsFSpA_-RgY_KRo";
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [

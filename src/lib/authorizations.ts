@@ -39,20 +39,6 @@ export const authorizationQueryOptions = (id: string) => ({
   },
 });
 
-/** Broker who issued a ficha (own profile, or any profile when the caller is an admin). */
-export const brokerProfileQueryOptions = (brokerId: string | undefined) => ({
-  queryKey: ["broker-profile", brokerId],
-  enabled: !!brokerId,
-  queryFn: async () => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("full_name, email, creci")
-      .eq("id", brokerId!)
-      .maybeSingle();
-    return data ?? null;
-  },
-});
-
 export async function createAuthorization(input: {
   owner: OwnerData;
   property: PropertyData;
@@ -106,3 +92,18 @@ export async function deleteAuthorization(id: string) {
   if (error) throw new Error(error.message);
   if (!count) throw new Error("Apenas administradores podem excluir fichas.");
 }
+
+export const brokerProfileQueryOptions = (brokerId: string | null | undefined) => ({
+  queryKey: ["broker", brokerId],
+  enabled: !!brokerId,
+  queryFn: async () => {
+    if (!brokerId) return null;
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("full_name, creci")
+      .eq("id", brokerId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+});

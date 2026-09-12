@@ -49,7 +49,7 @@ export const Route = createFileRoute("/_authenticated/fichas/$id")({
 
 function FichaDetailPage() {
   const { id } = Route.useParams();
-  const { displayName, fullName, creci, isAdmin } = useAuth();
+  const { displayName, creci, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [deleting, setDeleting] = useState(false);
@@ -65,7 +65,7 @@ function FichaDetailPage() {
 
   const ficha = fichaQ.data;
   const brokerQ = useQuery(brokerProfileQueryOptions(ficha?.broker_id));
-  const brokerName = brokerQ.data?.full_name || fullName || displayName;
+  const brokerName = brokerQ.data?.full_name || displayName || displayName;
   const brokerCreci = brokerQ.data?.creci || creci;
 
   const handleGenerateAndDownloadPdf = async () => {
@@ -171,7 +171,7 @@ function FichaDetailPage() {
                     ficha.owner?.telefone ?? "",
                     buildWhatsappMessage({
                       ownerName: ficha.owner?.nome ?? "",
-                      brokerName: fullName,
+                      brokerName: displayName,
                       brokerCreci: creci,
                       propertyAddress: shortAddress(ficha.property?.endereco),
                       link,

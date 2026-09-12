@@ -49,8 +49,6 @@ export function useAuth() {
     role: q.data?.role ?? null,
     isAdmin: q.data?.role === "admin",
     creci: (q.data?.profile as { creci?: string | null } | null)?.creci ?? null,
-    /** Real registered name — null until the broker fills it in on first access. */
-    fullName: q.data?.profile?.full_name ?? null,
     displayName: q.data?.profile?.full_name || user?.email?.split("@")[0] || "",
   };
 }
