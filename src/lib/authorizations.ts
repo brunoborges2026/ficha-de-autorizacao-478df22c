@@ -79,7 +79,7 @@ export async function updateAuthorization(
       property: input.property as unknown as Json,
       conditions: input.conditions as unknown as Json,
     })
-    .eq("id", id);
+    .eq("id", id).eq("status", "pendente");
   if (error) throw new Error(error.message);
 }
 
@@ -88,7 +88,7 @@ export async function deleteAuthorization(id: string) {
   const { error, count } = await supabase
     .from("authorizations")
     .delete({ count: "exact" })
-    .eq("id", id);
+    .eq("id", id).eq("status", "pendente");
   if (error) throw new Error(error.message);
   if (!count) throw new Error("Apenas administradores podem excluir fichas.");
 }

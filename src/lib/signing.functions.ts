@@ -88,7 +88,7 @@ export const getAuthorizationByToken = createServerFn({ method: "GET" })
     const { broker_id: _b, ...rest } = auth;
     const authorization: PublicAuthorization = {
       ...(rest as unknown as Omit<AuthorizationRecord, "broker_id">),
-      broker_name: broker?.full_name ?? broker?.email ?? null,
+      broker_name: broker?.full_name ?? "",
       broker_creci: broker?.creci ?? null,
     };
     return {

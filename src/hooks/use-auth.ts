@@ -49,7 +49,7 @@ export function useAuth() {
     role: q.data?.role ?? null,
     isAdmin: q.data?.role === "admin",
     creci: (q.data?.profile as { creci?: string | null } | null)?.creci ?? null,
-    displayName: q.data?.profile?.full_name || user?.email?.split("@")[0] || "",
+    displayName: q.data?.profile?.full_name || "",
   };
 }
 

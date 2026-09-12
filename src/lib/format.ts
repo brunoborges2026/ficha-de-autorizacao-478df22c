@@ -100,7 +100,7 @@ export const buildWhatsappMessage = (opts: {
     `Para concluir, basta acessar o link abaixo, conferir os dados, tirar uma selfie segurando seu documento e assinar digitalmente na tela. Leva menos de 3 minutos:`,
     `🔗 ${opts.link}`,
     ``,
-    `Após a assinatura, você receberá o PDF com o certificado de validação.`,
+    `Após a assinatura, você receberá o PDF com o certificado de validação 🔒.`,
     ``,
     `Qualquer dúvida, estou à disposição. Obrigado pela confiança! 🙏`,
   ].join("\n");

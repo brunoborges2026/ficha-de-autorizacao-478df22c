@@ -9,6 +9,7 @@ const Pad = SignatureCanvas as unknown as ComponentType<{
   ref?: unknown;
   penColor?: string;
   onEnd?: () => void;
+  clearOnResize?: boolean;
   canvasProps?: { className?: string };
 }>;
 
@@ -41,7 +42,7 @@ export function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) 
           ref={ref}
           penColor="#0f172a"
           onEnd={commit}
-          canvasProps={{ className: "h-44 w-full touch-none rounded-md sm:h-52" }}
+          clearOnResize={false} canvasProps={{ className: "h-44 w-full touch-none rounded-md sm:h-52" }}
         />
 
         {!hasInk && (

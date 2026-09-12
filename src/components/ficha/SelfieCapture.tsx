@@ -76,7 +76,7 @@ export function SelfieCapture({
             ref={videoRef}
             playsInline
             muted
-            className="aspect-[4/3] w-full scale-x-[-1] object-cover"
+            className="aspect-[4/3] w-full  object-cover"
           />
         ) : (
           <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 p-6 text-center">

@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { FichaDocument } from "@/components/ficha/FichaDocument";
 import { StatusBadge } from "@/components/ficha/StatusBadge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import {
   authorizationQueryOptions,
@@ -65,7 +65,7 @@ function FichaDetailPage() {
 
   const ficha = fichaQ.data;
   const brokerQ = useQuery(brokerProfileQueryOptions(ficha?.broker_id));
-  const brokerName = brokerQ.data?.full_name || displayName || displayName;
+  const brokerName = brokerQ.data?.full_name || displayName;
   const brokerCreci = brokerQ.data?.creci || creci;
 
   const handleGenerateAndDownloadPdf = async () => {
@@ -151,11 +151,7 @@ function FichaDetailPage() {
           <StatusBadge status={ficha.status} />
           {ficha.status === "pendente" ? (
             <>
-              <Button asChild variant="outline">
-                <Link to="/fichas/$id/editar" params={{ id }}>
-                  <Pencil className="h-4 w-4" /> Editar
-                </Link>
-              </Button>
+<Link to="/fichas/$id/editar" params={{ id }} className={buttonVariants({ variant: "outline" })}><Pencil className="mr-2 h-4 w-4" /> Editar</Link>
               <Button
                 variant="outline"
                 onClick={async () => {

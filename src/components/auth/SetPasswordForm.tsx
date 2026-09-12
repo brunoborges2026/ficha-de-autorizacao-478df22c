@@ -91,7 +91,8 @@ export function SetPasswordForm({ mode }: { mode: "first-access" | "recovery" })
       ...(isFirstAccess && fullName ? { data: { full_name: fullName } } : {}),
     });
     if (error) {
-      toast.error("Não foi possível salvar a senha", { description: error.message });
+      const msg = error.message.includes("New password should be different from the old password") ? "A nova senha deve ser diferente da senha atual." : error.message;
+      toast.error("Não foi possível salvar a senha", { description: msg });
       return;
     }
     try {

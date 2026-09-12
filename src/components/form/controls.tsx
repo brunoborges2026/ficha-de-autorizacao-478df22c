@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
 import { Field } from "@/components/form/Field";
 import { Input } from "@/components/ui/input";
@@ -155,17 +156,49 @@ export function MoneyInput({
   className?: string;
   error?: boolean;
 }) {
+  const formatValue = (val: string | number | undefined) => {
+    if (val === undefined || val === null || val === "") return "";
+    const num = typeof val === "string" ? parseFloat(val) : val;
+    if (isNaN(num)) return "";
+    return new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
+  };
+
+  const [displayValue, setDisplayValue] = React.useState(() => formatValue(value));
+
+  React.useEffect(() => {
+    setDisplayValue(formatValue(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let digits = e.target.value.replace(/\D/g, "");
+    if (!digits) {
+      setDisplayValue("");
+      onChange("");
+      return;
+    }
+    const num = parseInt(digits, 10) / 100;
+    const formatted = new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
+    setDisplayValue(formatted);
+    onChange(num.toString());
+  };
+
   return (
     <div className="relative">
       <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-muted-foreground">
         R$
       </span>
       <Input
-        inputMode="decimal"
+        inputMode="numeric"
         placeholder={placeholder}
         className={cn("pl-9", error && "border-destructive", className)}
-        value={value ?? ""}
-        onChange={(e) => onChange(e.target.value.replace(",", "."))}
+        value={displayValue}
+        onChange={handleChange}
       />
     </div>
   );
