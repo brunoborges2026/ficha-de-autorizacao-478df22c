@@ -151,7 +151,13 @@ function FichaDetailPage() {
           <StatusBadge status={ficha.status} />
           {ficha.status === "pendente" ? (
             <>
-<Link to="/fichas/$id/editar" params={{ id }} className={buttonVariants({ variant: "outline" })}><Pencil className="mr-2 h-4 w-4" /> Editar</Link>
+              <Link
+                to="/fichas/$id/editar"
+                params={{ id }}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Editar
+              </Link>
               <Button
                 variant="outline"
                 onClick={async () => {

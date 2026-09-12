@@ -34,7 +34,10 @@ function clientIp(request: Request | undefined) {
   );
 }
 
-type PublicAuthorization = Omit<AuthorizationRecord, "broker_id"> & { broker_name: string | null; broker_creci: string | null };
+type PublicAuthorization = Omit<AuthorizationRecord, "broker_id"> & {
+  broker_name: string | null;
+  broker_creci: string | null;
+};
 export type PublicSignature = Omit<SignatureRecord, "selfie_path" | "signature_path"> & {
   selfie_url: string | null;
   signature_url: string | null;
@@ -49,9 +52,7 @@ async function signedUrls(
   const paths = [sig.selfie_path, sig.signature_path, sig.pdf_path].filter(Boolean) as string[];
   const { data } = await admin.storage.from(BUCKET).createSignedUrls(paths, URL_TTL);
   const map = new Map<string, string>();
-  (data ?? []).forEach(
-    (d: any) => d.path && map.set(d.path, d.signedUrl),
-  );
+  (data ?? []).forEach((d: { path?: string; signedUrl?: string }) => d.path && map.set(d.path, d.signedUrl));
   const { selfie_path, signature_path, ...rest } = sig;
   return {
     ...rest,

@@ -42,7 +42,8 @@ export function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) 
           ref={ref}
           penColor="#0f172a"
           onEnd={commit}
-          clearOnResize={false} canvasProps={{ className: "h-44 w-full touch-none rounded-md sm:h-52" }}
+          clearOnResize={false}
+          canvasProps={{ className: "h-44 w-full touch-none rounded-md sm:h-52" }}
         />
 
         {!hasInk && (

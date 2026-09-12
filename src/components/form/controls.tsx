@@ -173,7 +173,7 @@ export function MoneyInput({
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let digits = e.target.value.replace(/\D/g, "");
+    const digits = e.target.value.replace(/\D/g, "");
     if (!digits) {
       setDisplayValue("");
       onChange("");

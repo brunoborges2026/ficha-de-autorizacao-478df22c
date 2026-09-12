@@ -72,12 +72,7 @@ export function SelfieCapture({
         {value ? (
           <img src={value} alt="Selfie capturada" className="aspect-[4/3] w-full object-cover" />
         ) : live ? (
-          <video
-            ref={videoRef}
-            playsInline
-            muted
-            className="aspect-[4/3] w-full  object-cover"
-          />
+          <video ref={videoRef} playsInline muted className="aspect-[4/3] w-full  object-cover" />
         ) : (
           <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 p-6 text-center">
             <Camera className="h-8 w-8 text-muted-foreground" />
