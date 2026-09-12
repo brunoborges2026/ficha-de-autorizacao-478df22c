@@ -154,6 +154,11 @@ function UsuariosPage() {
           <div className="grid place-items-center py-16">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
+        ) : usersQ.isError ? (
+          <div className="p-6 text-center text-red-500">
+            <p className="font-semibold">Erro ao carregar usuários</p>
+            <p className="text-sm">{usersQ.error?.message}</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
